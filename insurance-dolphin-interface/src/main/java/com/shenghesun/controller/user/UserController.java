@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.codec.multipart.SynchronossPartHttpMessageReader;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -48,7 +49,7 @@ public class UserController {
 			throws WxErrorException {
 		System.out.println("login.......................................");
 		BaseResponse response = new BaseResponse();
-		WxMaJscode2SessionResult session = this.wxService.getUserService().getSessionInfo(code);
+		WxMaJscode2SessionResult session  = this.wxService.getUserService().getSessionInfo(code);
 		String sessionKey = session.getSessionKey();
 		//通过openId sessionKey 生成3rd session 返回给客户端小程序
 		String accessToken = UUID.randomUUID().toString();
@@ -77,7 +78,6 @@ public class UserController {
         	}
         	data.put("userId", user.getId());
         }
-        
         response.setData(data);
 		return response;
 	}
@@ -97,6 +97,7 @@ public class UserController {
 	public Object unauthorizedLogin(String code) throws WxErrorException {
 		System.out.println("unauthorizedLogin.......................................");
 		BaseResponse response = new BaseResponse();
+		
 		WxMaJscode2SessionResult session = this.wxService.getUserService().getSessionInfo(code);
 		//String sessionKey = session.getSessionKey();
 		//通过openId sessionKey 生成3rd session 返回给客户端小程序
