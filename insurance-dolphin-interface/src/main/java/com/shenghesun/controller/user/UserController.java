@@ -77,6 +77,7 @@ public class UserController {
                 userService.save(user);
         	}
         	data.put("userId", user.getId());
+        	data.put("openId", user.getOpenId());
         }
         response.setData(data);
 		return response;
