@@ -42,6 +42,7 @@ public class OrderController {
 	@RequestMapping("/order")
 	@ResponseBody
 	public Object getPrePayId(HttpServletRequest request,String openId,String total_fee) throws Exception {
+		System.out.println("支付");
 		BaseResponse response = new BaseResponse();
 		Map<String,String> map = new HashMap<>();
 		//"o8ood1Eo3QzMT1JyxqXtE9Xv_QR0"

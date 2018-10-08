@@ -48,9 +48,12 @@ public class UserController {
 	public Object login(String code, String signature, String rawData, String encryptedData, String iv)
 			throws WxErrorException {
 		System.out.println("login.......................................");
+		System.out.println("rawData"+rawData);
+		System.out.println("signature"+signature);
 		BaseResponse response = new BaseResponse();
 		WxMaJscode2SessionResult session  = this.wxService.getUserService().getSessionInfo(code);
 		String sessionKey = session.getSessionKey();
+		System.out.println("sessionKey"+sessionKey);
 		//通过openId sessionKey 生成3rd session 返回给客户端小程序
 		String accessToken = UUID.randomUUID().toString();
 		redisUtil.set(accessToken, sessionKey + ":" + session.getOpenid(), BaseResponse.ex);
