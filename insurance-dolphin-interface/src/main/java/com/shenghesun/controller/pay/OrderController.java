@@ -41,18 +41,13 @@ public class OrderController {
 	 */
 	@RequestMapping("/order")
 	@ResponseBody
-	public Object getPrePayId(HttpServletRequest request,String openId) throws Exception {
+	public Object getPrePayId(HttpServletRequest request,String openId,String total_fee) throws Exception {
 		BaseResponse response = new BaseResponse();
-		/*Order order = new Order();
-		order.setOpenid(openId);
-		order.setGoodsName("衣服");
-		order.setGoodsValue("200");
-		order.setInsurer("张三");
-		order.setId(111111111111111111L);*/
 		Map<String,String> map = new HashMap<>();
-        map.put("openid","o8ood1Eo3QzMT1JyxqXtE9Xv_QR0");//用户标识openId
+		//"o8ood1Eo3QzMT1JyxqXtE9Xv_QR0"
+        map.put("openid",openId);//用户标识openId
         map.put("spbill_create_ip",request.getRemoteAddr());//请求Ip地址
-        map.put("body", "私人订制电竞服务-游戏");//商品描述			body 商家名称-销售商品类目
+        map.put("body", "飞行行李险-保险");//商品描述			body 商家名称-销售商品类目
         map.put("out_trade_no", System.currentTimeMillis() + RandomUtil.randomString(2));//商户订单号			out_trade_no
         map.put("total_fee", "2");//标价金额			total_fee
         map.put("trade_type", "JSAPI");//交易类型			trade_type
