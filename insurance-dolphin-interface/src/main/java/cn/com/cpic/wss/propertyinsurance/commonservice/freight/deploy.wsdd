@@ -1,0 +1,142 @@
+<!-- Use this file to deploy some handlers/chains and services      -->
+<!-- Two ways to do this:                                           -->
+<!--   java org.apache.axis.client.AdminClient deploy.wsdd          -->
+<!--      after the axis server is running                          -->
+<!-- or                                                             -->
+<!--   java org.apache.axis.utils.Admin client|server deploy.wsdd   -->
+<!--      from the same directory that the Axis engine runs         -->
+
+<deployment
+    xmlns="http://xml.apache.org/axis/wsdd/"
+    xmlns:java="http://xml.apache.org/axis/wsdd/providers/java">
+
+  <!-- Services from FreightCommonService WSDL service -->
+
+  <service name="FreightCommonServicePort" provider="java:RPC" style="wrapped" use="literal">
+      <parameter name="wsdlTargetNamespace" value="http://wss.cpic.com.cn/propertyinsurance/commonservice/freight"/>
+      <parameter name="wsdlServiceElement" value="FreightCommonService"/>
+      <parameter name="schemaQualified" value="http://wss.cpic.com.cn/propertyinsurance/commonservice/freight,http://wss.cpic.com.cn/propertyinsurance/commonservice/freight/types"/>
+      <parameter name="wsdlServicePort" value="FreightCommonServicePort"/>
+      <parameter name="className" value="cn.com.cpic.wss.propertyinsurance.commonservice.freight.FreightCommonServicePortSoapBindingImpl"/>
+      <parameter name="wsdlPortType" value="IZrxCommonService"/>
+      <parameter name="typeMappingVersion" value="1.2"/>
+      <operation name="approval" qname="operNS:approval" xmlns:operNS="http://wss.cpic.com.cn/propertyinsurance/commonservice/freight/types" returnQName="retNS:approvalReturn" xmlns:retNS="http://wss.cpic.com.cn/propertyinsurance/commonservice/freight/types" returnType="rtns:ApprovalResponse" xmlns:rtns="http://wss.cpic.com.cn/propertyinsurance/commonservice/freight/types" soapAction="" >
+        <parameter qname="pns:request" xmlns:pns="http://wss.cpic.com.cn/propertyinsurance/commonservice/freight/types" type="tns:ApprovalRequest" xmlns:tns="http://wss.cpic.com.cn/propertyinsurance/commonservice/freight/types"/>
+        <fault name="WssException" qname="fns:fault" xmlns:fns="http://wss.cpic.com.cn/propertyinsurance/commonservice/freight" class="cn.com.cpic.wss.propertyinsurance.commonservice.freight.types.WssException" type="tns:WssException" xmlns:tns="http://wss.cpic.com.cn/propertyinsurance/commonservice/freight/types"/>
+      </operation>
+      <operation name="queryPolicyStatus" qname="operNS:queryPolicyStatus" xmlns:operNS="http://wss.cpic.com.cn/propertyinsurance/commonservice/freight/types" returnQName="retNS:approvalReturn" xmlns:retNS="http://wss.cpic.com.cn/propertyinsurance/commonservice/freight/types" returnType="rtns:ApprovalResponse" xmlns:rtns="http://wss.cpic.com.cn/propertyinsurance/commonservice/freight/types" soapAction="" >
+        <parameter qname="pns:request" xmlns:pns="http://wss.cpic.com.cn/propertyinsurance/commonservice/freight/types" type="tns:ApprovalRequest" xmlns:tns="http://wss.cpic.com.cn/propertyinsurance/commonservice/freight/types"/>
+        <fault name="WssException" qname="fns:fault" xmlns:fns="http://wss.cpic.com.cn/propertyinsurance/commonservice/freight" class="cn.com.cpic.wss.propertyinsurance.commonservice.freight.types.WssException" type="tns:WssException" xmlns:tns="http://wss.cpic.com.cn/propertyinsurance/commonservice/freight/types"/>
+      </operation>
+      <operation name="endorse" qname="operNS:endorse" xmlns:operNS="http://wss.cpic.com.cn/propertyinsurance/commonservice/freight/types" returnQName="retNS:endorseReturn" xmlns:retNS="http://wss.cpic.com.cn/propertyinsurance/commonservice/freight/types" returnType="rtns:EndorseResponse" xmlns:rtns="http://wss.cpic.com.cn/propertyinsurance/commonservice/freight/types" soapAction="" >
+        <parameter qname="pns:request" xmlns:pns="http://wss.cpic.com.cn/propertyinsurance/commonservice/freight/types" type="tns:EndorseRequest" xmlns:tns="http://wss.cpic.com.cn/propertyinsurance/commonservice/freight/types"/>
+        <fault name="WssException" qname="fns:fault" xmlns:fns="http://wss.cpic.com.cn/propertyinsurance/commonservice/freight" class="cn.com.cpic.wss.propertyinsurance.commonservice.freight.types.WssException" type="tns:WssException" xmlns:tns="http://wss.cpic.com.cn/propertyinsurance/commonservice/freight/types"/>
+      </operation>
+      <operation name="doIssuedPaymentPolicy" qname="operNS:doIssuedPaymentPolicy" xmlns:operNS="http://wss.cpic.com.cn/propertyinsurance/commonservice/freight/types" returnQName="retNS:approvalReturn" xmlns:retNS="http://wss.cpic.com.cn/propertyinsurance/commonservice/freight/types" returnType="rtns:ApprovalResponse" xmlns:rtns="http://wss.cpic.com.cn/propertyinsurance/commonservice/freight/types" soapAction="" >
+        <parameter qname="pns:request" xmlns:pns="http://wss.cpic.com.cn/propertyinsurance/commonservice/freight/types" type="tns:ApprovalRequest" xmlns:tns="http://wss.cpic.com.cn/propertyinsurance/commonservice/freight/types"/>
+        <fault name="WssException" qname="fns:fault" xmlns:fns="http://wss.cpic.com.cn/propertyinsurance/commonservice/freight" class="cn.com.cpic.wss.propertyinsurance.commonservice.freight.types.WssException" type="tns:WssException" xmlns:tns="http://wss.cpic.com.cn/propertyinsurance/commonservice/freight/types"/>
+      </operation>
+      <operation name="doQueryBasicData" qname="operNS:doQueryBasicData" xmlns:operNS="http://wss.cpic.com.cn/propertyinsurance/commonservice/freight/types" returnQName="retNS:approvalReturn" xmlns:retNS="http://wss.cpic.com.cn/propertyinsurance/commonservice/freight/types" returnType="rtns:ApprovalResponse" xmlns:rtns="http://wss.cpic.com.cn/propertyinsurance/commonservice/freight/types" soapAction="" >
+        <parameter qname="pns:request" xmlns:pns="http://wss.cpic.com.cn/propertyinsurance/commonservice/freight/types" type="tns:ApprovalRequest" xmlns:tns="http://wss.cpic.com.cn/propertyinsurance/commonservice/freight/types"/>
+        <fault name="WssException" qname="fns:fault" xmlns:fns="http://wss.cpic.com.cn/propertyinsurance/commonservice/freight" class="cn.com.cpic.wss.propertyinsurance.commonservice.freight.types.WssException" type="tns:WssException" xmlns:tns="http://wss.cpic.com.cn/propertyinsurance/commonservice/freight/types"/>
+      </operation>
+      <operation name="postApplication" qname="operNS:postApplication" xmlns:operNS="http://wss.cpic.com.cn/propertyinsurance/commonservice/freight/types" returnQName="retNS:approvalReturn" xmlns:retNS="http://wss.cpic.com.cn/propertyinsurance/commonservice/freight/types" returnType="rtns:ApprovalResponse" xmlns:rtns="http://wss.cpic.com.cn/propertyinsurance/commonservice/freight/types" soapAction="" >
+        <parameter qname="pns:request" xmlns:pns="http://wss.cpic.com.cn/propertyinsurance/commonservice/freight/types" type="tns:ApprovalRequest" xmlns:tns="http://wss.cpic.com.cn/propertyinsurance/commonservice/freight/types"/>
+        <fault name="WssException" qname="fns:fault" xmlns:fns="http://wss.cpic.com.cn/propertyinsurance/commonservice/freight" class="cn.com.cpic.wss.propertyinsurance.commonservice.freight.types.WssException" type="tns:WssException" xmlns:tns="http://wss.cpic.com.cn/propertyinsurance/commonservice/freight/types"/>
+      </operation>
+      <operation name="queryApplicationStatus" qname="operNS:queryApplicationStatus" xmlns:operNS="http://wss.cpic.com.cn/propertyinsurance/commonservice/freight/types" returnQName="retNS:approvalReturn" xmlns:retNS="http://wss.cpic.com.cn/propertyinsurance/commonservice/freight/types" returnType="rtns:ApprovalResponse" xmlns:rtns="http://wss.cpic.com.cn/propertyinsurance/commonservice/freight/types" soapAction="" >
+        <parameter qname="pns:request" xmlns:pns="http://wss.cpic.com.cn/propertyinsurance/commonservice/freight/types" type="tns:ApprovalRequest" xmlns:tns="http://wss.cpic.com.cn/propertyinsurance/commonservice/freight/types"/>
+        <fault name="WssException" qname="fns:fault" xmlns:fns="http://wss.cpic.com.cn/propertyinsurance/commonservice/freight" class="cn.com.cpic.wss.propertyinsurance.commonservice.freight.types.WssException" type="tns:WssException" xmlns:tns="http://wss.cpic.com.cn/propertyinsurance/commonservice/freight/types"/>
+      </operation>
+      <operation name="cancelApplication" qname="operNS:cancelApplication" xmlns:operNS="http://wss.cpic.com.cn/propertyinsurance/commonservice/freight/types" returnQName="retNS:approvalReturn" xmlns:retNS="http://wss.cpic.com.cn/propertyinsurance/commonservice/freight/types" returnType="rtns:ApprovalResponse" xmlns:rtns="http://wss.cpic.com.cn/propertyinsurance/commonservice/freight/types" soapAction="" >
+        <parameter qname="pns:request" xmlns:pns="http://wss.cpic.com.cn/propertyinsurance/commonservice/freight/types" type="tns:ApprovalRequest" xmlns:tns="http://wss.cpic.com.cn/propertyinsurance/commonservice/freight/types"/>
+        <fault name="WssException" qname="fns:fault" xmlns:fns="http://wss.cpic.com.cn/propertyinsurance/commonservice/freight" class="cn.com.cpic.wss.propertyinsurance.commonservice.freight.types.WssException" type="tns:WssException" xmlns:tns="http://wss.cpic.com.cn/propertyinsurance/commonservice/freight/types"/>
+      </operation>
+      <operation name="doClaimSettl" qname="operNS:doClaimSettl" xmlns:operNS="http://wss.cpic.com.cn/propertyinsurance/commonservice/freight/types" returnQName="retNS:approvalReturn" xmlns:retNS="http://wss.cpic.com.cn/propertyinsurance/commonservice/freight/types" returnType="rtns:ApprovalResponse" xmlns:rtns="http://wss.cpic.com.cn/propertyinsurance/commonservice/freight/types" soapAction="" >
+        <parameter qname="pns:request" xmlns:pns="http://wss.cpic.com.cn/propertyinsurance/commonservice/freight/types" type="tns:ApprovalRequest" xmlns:tns="http://wss.cpic.com.cn/propertyinsurance/commonservice/freight/types"/>
+        <fault name="WssException" qname="fns:fault" xmlns:fns="http://wss.cpic.com.cn/propertyinsurance/commonservice/freight" class="cn.com.cpic.wss.propertyinsurance.commonservice.freight.types.WssException" type="tns:WssException" xmlns:tns="http://wss.cpic.com.cn/propertyinsurance/commonservice/freight/types"/>
+      </operation>
+      <operation name="claimReportInfo" qname="operNS:claimReportInfo" xmlns:operNS="http://wss.cpic.com.cn/propertyinsurance/commonservice/freight/types" returnQName="retNS:approvalReturn" xmlns:retNS="http://wss.cpic.com.cn/propertyinsurance/commonservice/freight/types" returnType="rtns:ApprovalResponse" xmlns:rtns="http://wss.cpic.com.cn/propertyinsurance/commonservice/freight/types" soapAction="" >
+        <parameter qname="pns:request" xmlns:pns="http://wss.cpic.com.cn/propertyinsurance/commonservice/freight/types" type="tns:ApprovalRequest" xmlns:tns="http://wss.cpic.com.cn/propertyinsurance/commonservice/freight/types"/>
+        <fault name="WssException" qname="fns:fault" xmlns:fns="http://wss.cpic.com.cn/propertyinsurance/commonservice/freight" class="cn.com.cpic.wss.propertyinsurance.commonservice.freight.types.WssException" type="tns:WssException" xmlns:tns="http://wss.cpic.com.cn/propertyinsurance/commonservice/freight/types"/>
+      </operation>
+      <operation name="receivePaySysInfo" qname="operNS:receivePaySysInfo" xmlns:operNS="http://wss.cpic.com.cn/propertyinsurance/commonservice/freight/types" returnQName="retNS:approvalReturn" xmlns:retNS="http://wss.cpic.com.cn/propertyinsurance/commonservice/freight/types" returnType="rtns:ApprovalResponse" xmlns:rtns="http://wss.cpic.com.cn/propertyinsurance/commonservice/freight/types" soapAction="" >
+        <parameter qname="pns:request" xmlns:pns="http://wss.cpic.com.cn/propertyinsurance/commonservice/freight/types" type="tns:ApprovalRequest" xmlns:tns="http://wss.cpic.com.cn/propertyinsurance/commonservice/freight/types"/>
+        <fault name="WssException" qname="fns:fault" xmlns:fns="http://wss.cpic.com.cn/propertyinsurance/commonservice/freight" class="cn.com.cpic.wss.propertyinsurance.commonservice.freight.types.WssException" type="tns:WssException" xmlns:tns="http://wss.cpic.com.cn/propertyinsurance/commonservice/freight/types"/>
+      </operation>
+      <parameter name="allowedMethods" value="postApplication doClaimSettl queryApplicationStatus approval receivePaySysInfo cancelApplication endorse doIssuedPaymentPolicy claimReportInfo doQueryBasicData queryPolicyStatus"/>
+
+      <typeMapping
+        xmlns:ns="http://wss.cpic.com.cn/propertyinsurance/commonservice/freight/types"
+        qname="ns:ApprovalProduct"
+        type="java:cn.com.cpic.wss.propertyinsurance.commonservice.freight.types.ApprovalProduct"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle=""
+      />
+      <typeMapping
+        xmlns:ns="http://wss.cpic.com.cn/propertyinsurance/commonservice/freight/types"
+        qname="ns:WssException"
+        type="java:cn.com.cpic.wss.propertyinsurance.commonservice.freight.types.WssException"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle=""
+      />
+      <typeMapping
+        xmlns:ns="http://wss.cpic.com.cn/propertyinsurance/commonservice/freight/types"
+        qname="ns:SysMessage"
+        type="java:cn.com.cpic.wss.propertyinsurance.commonservice.freight.types.SysMessage"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle=""
+      />
+      <typeMapping
+        xmlns:ns="http://wss.cpic.com.cn/propertyinsurance/commonservice/freight/types"
+        qname="ns:LoginUser"
+        type="java:cn.com.cpic.wss.propertyinsurance.commonservice.freight.types.LoginUser"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle=""
+      />
+      <typeMapping
+        xmlns:ns="http://wss.cpic.com.cn/propertyinsurance/commonservice/freight/types"
+        qname="ns:EndorseType"
+        type="java:cn.com.cpic.wss.propertyinsurance.commonservice.freight.types.EndorseType"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle=""
+      />
+      <typeMapping
+        xmlns:ns="http://wss.cpic.com.cn/propertyinsurance/commonservice/freight/types"
+        qname="ns:EndorseResponse"
+        type="java:cn.com.cpic.wss.propertyinsurance.commonservice.freight.types.EndorseResponse"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle=""
+      />
+      <typeMapping
+        xmlns:ns="http://wss.cpic.com.cn/propertyinsurance/commonservice/freight/types"
+        qname="ns:EndorseRequest"
+        type="java:cn.com.cpic.wss.propertyinsurance.commonservice.freight.types.EndorseRequest"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle=""
+      />
+      <typeMapping
+        xmlns:ns="http://wss.cpic.com.cn/propertyinsurance/commonservice/freight/types"
+        qname="ns:ApprovalResponse"
+        type="java:cn.com.cpic.wss.propertyinsurance.commonservice.freight.types.ApprovalResponse"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle=""
+      />
+      <typeMapping
+        xmlns:ns="http://wss.cpic.com.cn/propertyinsurance/commonservice/freight/types"
+        qname="ns:ApprovalRequest"
+        type="java:cn.com.cpic.wss.propertyinsurance.commonservice.freight.types.ApprovalRequest"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle=""
+      />
+  </service>
+</deployment>
