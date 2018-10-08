@@ -1,7 +1,5 @@
 package com.shenghesun.model.webservice;
 
-import com.shenghesun.util.XStreamUtil;
-import com.shenghesun.util.XmlUtils;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 import lombok.Data;
