@@ -21,6 +21,7 @@
 		<java.version>1.8</java.version>
 		<druid.version>1.1.8</druid.version>
 		<dolphin.version>0.0.1-SNAPSHOT</dolphin.version>
+		<cxf.version>3.2.4</cxf.version>
 		<weixin-java-miniapp.version>2.9.6.BETA</weixin-java-miniapp.version>
 	</properties>
 
