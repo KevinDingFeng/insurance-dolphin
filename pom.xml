@@ -7,14 +7,14 @@
 	<packaging>pom</packaging>
 	<name>insurance-dolphin</name>
 	<description>dolphin insurance</description>
-	
+
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
 		<version>2.0.0.RELEASE</version>
 		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
-	
+
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -23,7 +23,7 @@
 		<dolphin.version>0.0.1-SNAPSHOT</dolphin.version>
 		<weixin-java-miniapp.version>2.9.6.BETA</weixin-java-miniapp.version>
 	</properties>
-	
+
 	<dependencies>
 
 		<dependency>
@@ -91,8 +91,19 @@
 			<artifactId>weixin-java-miniapp</artifactId>
 			<version>${weixin-java-miniapp.version}</version>
 		</dependency>
+		<!-- 发送短信 -->
+		<dependency>
+			<groupId>com.aliyun</groupId>
+			<artifactId>aliyun-java-sdk-core</artifactId>
+			<version>3.2.3</version>
+		</dependency>
+		<dependency>
+			<groupId>com.aliyun</groupId>
+			<artifactId>aliyun-java-sdk-dysmsapi</artifactId>
+			<version>1.0.0</version>
+		</dependency>
 	</dependencies>
-	
+
 	<modules>
 		<module>insurance-dolphin-interface</module>
 		<module>insurance-dolphin-wxminiprogram</module>
