@@ -4,11 +4,9 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.stereotype.Repository;
 
-import com.shenghesun.entity.User;
+import com.shenghesun.entity.PayMessage;
 
 @Repository
-public interface UserDao extends PagingAndSortingRepository<User, Long>, JpaSpecificationExecutor<User>{
+public interface PayDao extends PagingAndSortingRepository<PayMessage, Long>, JpaSpecificationExecutor<PayMessage>{
 
-	public User findByOpenId(String openId);
-	
 }

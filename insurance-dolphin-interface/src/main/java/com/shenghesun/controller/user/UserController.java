@@ -9,13 +9,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.codec.multipart.SynchronossPartHttpMessageReader;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.shenghesun.common.BaseResponse;
+
 import com.shenghesun.entity.User;
 import com.shenghesun.service.UserService;
 import com.shenghesun.util.RedisUtil;
@@ -38,6 +40,7 @@ public class UserController {
     @Autowired
     private WxMaService wxService;
 
+	
 	/**
 	 * 登陆接口
 	 * 
@@ -47,13 +50,10 @@ public class UserController {
 	@ResponseBody
 	public Object login(String code, String signature, String rawData, String encryptedData, String iv)
 			throws WxErrorException {
-		System.out.println("login.......................................");
-		System.out.println("rawData"+rawData);
-		System.out.println("signature"+signature);
+		
 		BaseResponse response = new BaseResponse();
-		WxMaJscode2SessionResult session  = this.wxService.getUserService().getSessionInfo(code);
+		WxMaJscode2SessionResult session = this.wxService.getUserService().getSessionInfo(code);
 		String sessionKey = session.getSessionKey();
-		System.out.println("sessionKey"+sessionKey);
 		//通过openId sessionKey 生成3rd session 返回给客户端小程序
 		String accessToken = UUID.randomUUID().toString();
 		redisUtil.set(accessToken, sessionKey + ":" + session.getOpenid(), BaseResponse.ex);
@@ -74,6 +74,7 @@ public class UserController {
             BeanUtils.copyProperties(userInfo, user);
             User dbUser = userService.save(user);
             data.put("userId", dbUser.getId());
+            
         }else {
         	if(StringUtils.isEmpty(user.getNickName())) {
         		BeanUtils.copyProperties(userInfo, user);
@@ -82,6 +83,7 @@ public class UserController {
         	data.put("userId", user.getId());
         	data.put("openId", user.getOpenId());
         }
+        
         response.setData(data);
 		return response;
 	}
@@ -99,9 +101,8 @@ public class UserController {
 	@GetMapping("unauthorizedLogin")
 	@ResponseBody
 	public Object unauthorizedLogin(String code) throws WxErrorException {
-		System.out.println("unauthorizedLogin.......................................");
-		BaseResponse response = new BaseResponse();
 		
+		BaseResponse response = new BaseResponse();
 		WxMaJscode2SessionResult session = this.wxService.getUserService().getSessionInfo(code);
 		//String sessionKey = session.getSessionKey();
 		//通过openId sessionKey 生成3rd session 返回给客户端小程序
@@ -128,7 +129,6 @@ public class UserController {
 	@GetMapping("info")
 	@ResponseBody
 	public Object info(String token) {
-		System.out.println("info.......................................");
 		BaseResponse response = new BaseResponse();
 		User user = userService.findByOpenId(getOpenId(token));
 		Map<String, Object> data = new HashMap<>();
@@ -141,7 +141,6 @@ public class UserController {
 	@GetMapping("checkToken")
 	@ResponseBody
 	public Object checkToken(String token){
-		System.out.println("checktoken.......................................");
 		BaseResponse response = new BaseResponse();
 		//TODO token 没过期 并且有对应的用户
 		if(!redisUtil.exists(token)) {
@@ -167,7 +166,7 @@ public class UserController {
 	@GetMapping("setupUserInfo")
 	@ResponseBody
 	public Object setUpUserInfo(String token, String mpGender, String constellation, String age) {
-		System.out.println("setupInfo.......................................");
+		
 		BaseResponse response = new BaseResponse();
 		User user = userService.findByOpenId(getOpenId(token));
 		user.setMpGender(Integer.valueOf(mpGender));
