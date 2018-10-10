@@ -9,4 +9,6 @@ import com.shenghesun.entity.PayMessage;
 @Repository
 public interface PayDao extends PagingAndSortingRepository<PayMessage, Long>, JpaSpecificationExecutor<PayMessage>{
 
+	PayMessage findByOrderNo(String orderNo);
+
 }

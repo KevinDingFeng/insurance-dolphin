@@ -6,10 +6,8 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 import org.apache.http.util.EntityUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -64,7 +62,6 @@ class CustomerController {
 			//HttpResponse response = HttpUtils.doPost("http://www.baidu.com", "", "POST", headers, querys, bodys);
 			int status = response.getStatusLine().getStatusCode();
 			if ((status >= 200) && (status < 300)) {
-				Header[] rheaders = response.getAllHeaders();
 				resultStr = EntityUtils.toString(response.getEntity());
 				System.out.println(resultStr);
 				JsonParser jp = new JsonParser();

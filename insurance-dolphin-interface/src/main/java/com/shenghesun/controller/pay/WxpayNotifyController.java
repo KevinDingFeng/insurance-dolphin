@@ -12,13 +12,20 @@ import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.shenghesun.entity.PayMessage;
+import com.shenghesun.service.PayService;
+
 @RestController
 @RequestMapping(value = "/wxpay")
 public class WxpayNotifyController {
+	
+	@Autowired
+	private PayService payService;
 	
 	public Element getRootElement(HttpServletRequest request)
 			throws IOException, DocumentException {
@@ -39,11 +46,13 @@ public class WxpayNotifyController {
 	@RequestMapping(value = "/notify", method = {RequestMethod.GET, RequestMethod.POST})
 	public String wxnotify(HttpServletRequest request,
 			HttpServletResponse response) throws IOException, DocumentException {
-		
+		System.out.println("支付成功通知");
 		Element root = this.getRootElement(request);
 		String returnCode = root.element("return_code").getText();
 		Element e = root.element("return_msg");
 		String returnMsg = "success";//TODO
+		String orderNo = root.element("out_trade_no").getText();
+
 		if(e != null) {
 			returnMsg = e.getText();
 		}
@@ -51,6 +60,10 @@ public class WxpayNotifyController {
 		if ("SUCCESS".equals(returnCode)) {
 			System.out.println("if...........");
 			System.out.println("支付通知成功，" + returnMsg);
+			//修改订单状态
+			PayMessage payMessage = payService.findByOrderNo(orderNo);
+			payMessage.setPayState("1");
+			payService.save(payMessage);
 		} else {
 			System.out.println("else..............");
 			System.out.println("支付通知失败，" + returnMsg);
