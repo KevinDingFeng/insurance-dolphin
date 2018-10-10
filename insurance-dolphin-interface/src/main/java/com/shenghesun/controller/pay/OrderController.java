@@ -73,7 +73,7 @@ public class OrderController {
              while (it.hasNext()) {
              Map.Entry<String, String> entry = it.next();
         }
-        
+          
         String returnCode = (String) resultMap.get("return_code");//通信标识
         String returnMsg = (String) resultMap.get("return_msg");//通信错误信息
         String resultCode = (String) resultMap.get("result_code");//交易标识
