@@ -43,7 +43,7 @@ public class OrderController {
 	@RequestMapping("/order")
 	@ResponseBody
 	public Object getPrePayId(HttpServletRequest request,PayMessage payMessage) throws Exception {
-		//处理传入对象
+		//完善投保对象信息
 		payMessage.setInsurancecardcode(payMessage.getApplycardcode());
 		payMessage.setEffectdate(payMessage.getSaildate());
 		payMessage.setInsurantname(payMessage.getApplyname());
@@ -54,7 +54,6 @@ public class OrderController {
 		}else {
 			payMessage.setClasstype("12040200");
 		}
-		
 		String orderNo = System.currentTimeMillis() + RandomUtil.randomString(2);
 		payMessage.setOrderNo(orderNo);
 		

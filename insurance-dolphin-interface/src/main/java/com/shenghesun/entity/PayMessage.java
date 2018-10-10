@@ -70,9 +70,9 @@ public class PayMessage extends BaseEntity implements Serializable{
 	@Column(length=200)
 	private String claimagent;
 	@Column(length=12)
-	private String mainitemcode;
+	private String mainitemcode="HK";
 	@Column(columnDefinition = "BLOB")
-	private String itemcontent;
+	private String itemcontent="国内航空货物运输保险条款";
 	@Column(length=12)
 	private String itemaddcode;
 	@Column(columnDefinition = "BLOB")
