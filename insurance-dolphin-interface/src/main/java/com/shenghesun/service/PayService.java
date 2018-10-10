@@ -16,5 +16,5 @@ public class PayService {
 	public PayMessage save(PayMessage payMessage) {
 		return payDao.save(payMessage);
 	}
-
+   
 }
