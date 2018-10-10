@@ -34,7 +34,7 @@ public class PayMessage extends BaseEntity implements Serializable{
 	@Column(length=200)
 	private String insurantname;
 	@Column(length=50)
-	private String insurancecardtype;
+	private String insurancecardtype="1170010001";
 	@Column(length=50)
 	private String insurancecardcode;
 	@Column
