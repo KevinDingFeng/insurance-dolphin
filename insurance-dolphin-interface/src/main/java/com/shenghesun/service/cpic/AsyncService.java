@@ -12,7 +12,6 @@ import com.shenghesun.model.webservice.Datas;
 import com.shenghesun.model.webservice.Freightcpic;
 import com.shenghesun.model.webservice.Header;
 import com.shenghesun.service.PayService;
-import com.shenghesun.util.StringGenerateUtils;
 import com.shenghesun.util.XStreamUtil;
 
 /**
