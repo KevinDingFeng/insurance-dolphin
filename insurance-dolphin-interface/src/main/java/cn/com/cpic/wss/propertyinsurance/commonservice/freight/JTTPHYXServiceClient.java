@@ -7,8 +7,6 @@ import org.apache.log4j.Logger;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
-
-import cn.com.cpic.wss.propertyinsurance.commonservice.freight.IZrxCommonService;
 public class JTTPHYXServiceClient {
 	private static Logger log = Logger.getLogger(JTTPHYXServiceClient.class);
 	
@@ -20,7 +18,7 @@ public class JTTPHYXServiceClient {
 	
 	private JTTPHYXServiceClient(){}
 	
-	//»ñÈ¡·şÎñ¶Ë·½·¨
+	//è·å–æœåŠ¡ç«¯æ–¹æ³•
 	public IZrxCommonService getServicePort(String servicePortAddress) throws Exception{
 		FreightCommonServiceLocator serviceLLocaltor = new FreightCommonServiceLocator();
 		java.net.URL endpoint = new URL(servicePortAddress);
@@ -28,7 +26,7 @@ public class JTTPHYXServiceClient {
 	}
 	
 	/******
-	 * ×ª»»Í¶±£ÏìÓ¦±¨ÎÄÊı¾İµ½MAPÖĞ
+	 * è½¬æ¢æŠ•ä¿å“åº”æŠ¥æ–‡æ•°æ®åˆ°MAPä¸­
 	 * @param responseXml
 	 * @return
 	 */
@@ -47,22 +45,22 @@ public class JTTPHYXServiceClient {
 		Element rootEL = doc.getRootElement();
 		Element result = rootEL.element("RESULT");
 		Element unitCodeElement = result.element("UNITCODE");
-		//·Ö¹«Ë¾´úÂë
+		//åˆ†å…¬å¸ä»£ç 
 		map.put("unitCode", unitCodeElement.getText());
-		//Í¶±£µ¥ºÅ
+		//æŠ•ä¿å•å·
 		Element applyNoElement = result.element("APPLYNO");
 		map.put("applyNo", applyNoElement.getText());
-		//±£µ¥ºÅ
+		//ä¿å•å·
 		Element policyNoElement = result.element("POLICYNO");
 		map.put("policyNo", policyNoElement.getText());
-		//±£µ¥×´Ì¬
+		//ä¿å•çŠ¶æ€
 		Element statusElement = result.element("STATUS");
 		map.put("status", statusElement.getText());
 		return map;
 	}
 	
 	/***
-	 * ×ª»»²éÑ¯ÏìÓ¦±¨ÎÄÊı¾İµ½MAPÖĞ
+	 * è½¬æ¢æŸ¥è¯¢å“åº”æŠ¥æ–‡æ•°æ®åˆ°MAPä¸­
 	 * @param responseXML
 	 * @return
 	 */
