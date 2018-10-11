@@ -120,12 +120,8 @@ class CustomerController {
 	public Object getFlightNo(String depCityCode,String arrCityCode){
 		BaseResponse baseResponse = new BaseResponse();
 		System.out.println(depCityCode+" "+arrCityCode);
-		CityCode city = new CityCode();
-		city.setCityName("兰州");
-		city.setCityCode("LHW");
-		city.setCityName("成都");
-		city.setCityCode("CTU");
-		
+		CityCode depCity = cityService.findByCityCode(depCityCode);
+		System.out.println(depCity.getCityName());
 		//HttpResponse response = null;
 		/*	Map<String, String> map = new HashMap<>();
 			
