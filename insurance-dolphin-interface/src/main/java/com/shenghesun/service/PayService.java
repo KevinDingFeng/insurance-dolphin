@@ -20,7 +20,6 @@ public class PayService {
 	public PayMessage findByOrderNo(String orderNo) {
 		return payDao.findByOrderNo(orderNo);
 	}
-	
 	public PayMessage completePayMessage(PayMessage payMessage) {
 		payMessage.setInsurancecardcode(payMessage.getApplycardcode());
 		payMessage.setEffectdate(payMessage.getSaildate());

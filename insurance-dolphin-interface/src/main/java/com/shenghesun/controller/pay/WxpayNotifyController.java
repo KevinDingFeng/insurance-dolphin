@@ -17,15 +17,18 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.shenghesun.entity.PayMessage;
-import com.shenghesun.service.PayService;
+import com.shenghesun.service.cpic.AsyncService;
 
 @RestController
 @RequestMapping(value = "/wxpay")
 public class WxpayNotifyController {
 	
+//	@Autowired
+//	private PayService payService;
+	
 	@Autowired
-	private PayService payService;
+	private AsyncService asyncService;
+	
 	
 	public Element getRootElement(HttpServletRequest request)
 			throws IOException, DocumentException {
@@ -37,7 +40,7 @@ public class WxpayNotifyController {
 			sb.append(line);
 		}
 		String xmlStr = sb.toString();
-		System.out.println("xmlstr.............."+xmlStr);
+		//System.out.println("xmlstr.............."+xmlStr);
 		Document document = DocumentHelper.parseText(xmlStr);
 		Element root = document.getRootElement();
 		return root;
@@ -46,27 +49,27 @@ public class WxpayNotifyController {
 	@RequestMapping(value = "/notify", method = {RequestMethod.GET, RequestMethod.POST})
 	public String wxnotify(HttpServletRequest request,
 			HttpServletResponse response) throws IOException, DocumentException {
-		System.out.println("支付成功通知");
+		
 		Element root = this.getRootElement(request);
 		String returnCode = root.element("return_code").getText();
 		Element e = root.element("return_msg");
 		String returnMsg = "success";//TODO
-		String orderNo = root.element("out_trade_no").getText();
-
 		if(e != null) {
 			returnMsg = e.getText();
 		}
-		System.out.println("root....."+root);
-		if ("SUCCESS".equals(returnCode)) {
-			System.out.println("if...........");
-			System.out.println("支付通知成功，" + returnMsg);
-			//修改订单状态
-			PayMessage payMessage = payService.findByOrderNo(orderNo);
-			payMessage.setPayState("1");
-			payService.save(payMessage);
+		//System.out.println("root....."+root);
+		if ("SUCCESS".equals(returnCode)) {//支付成功
+			//商户系统内部订单号，要求32个字符内，只能是数字、大小写字母_-|*@ ，
+			//且在同一个商户号下唯一。
+			String orderNo = root.element("out_trade_no").getText();
+			//执行异步接口
+			asyncService.executeAsync(orderNo);
+			
+//			System.out.println("if...........");
+//			System.out.println("支付通知成功，" + returnMsg);
 		} else {
-			System.out.println("else..............");
-			System.out.println("支付通知失败，" + returnMsg);
+//			System.out.println("else..............");
+//			System.out.println("支付通知失败，" + returnMsg);
 		}
 		Document document = DocumentHelper.createDocument();
 		Element xmlE = document.addElement("xml");
@@ -74,5 +77,16 @@ public class WxpayNotifyController {
 		xmlE.addElement("return_msg").setText(returnMsg);
 		System.out.println("支付通知接收信息结束，返回 xml : " + document.asXML());
 		return document.asXML();
+	}
+	
+	
+	@RequestMapping("/test")
+	public String testIndex() {
+		System.out.println("访问成功");
+		
+		String orderNo = "1539152190246z5";
+		asyncService.executeAsync(orderNo);
+		
+		return "成功！";
 	}
 }
