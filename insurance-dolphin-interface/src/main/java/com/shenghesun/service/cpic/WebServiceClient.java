@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 
 import com.shenghesun.entity.PayMessage;
 import com.shenghesun.entity.cpic.Approvl;
+import com.shenghesun.util.SmsCodeService;
 import com.shenghesun.util.cpic.XmlUtils;
 
 import cn.com.cpic.wss.propertyinsurance.commonservice.freight.FreightCommonServiceLocator;
@@ -28,24 +29,24 @@ import cn.com.cpic.wss.propertyinsurance.commonservice.freight.types.ApprovalRes
 import cn.com.cpic.wss.propertyinsurance.commonservice.freight.types.LoginUser;
 import cn.com.cpic.wss.propertyinsurance.commonservice.freight.types.SysMessage;
 
- /**
-  * WebService客户端通用类
-  * @ClassName: WebServiceClient 
-  * @Description: TODO
-  * @author: yangzp
-  * @date: 2018年9月30日 下午1:30:19  
-  */
+/**
+ * WebService客户端通用类
+ * @ClassName: WebServiceClient 
+ * @Description: TODO
+ * @author: yangzp
+ * @date: 2018年9月30日 下午1:30:19  
+ */
 @Service
 public class WebServiceClient {
-	
+
 	private static final Logger log = Logger.getLogger(WebServiceClient.class);
-	
+
 	/**
 	 * wsdl url
 	 */
 	@Value("${cpic.web.wsdl.url}")
 	private String _WsUrl;
-	
+
 	@Value("${cpic.userName}")
 	private String userName;
 	@Value("${cpic.password}")
@@ -55,23 +56,25 @@ public class WebServiceClient {
 	 */
 	@Value("${cpic.classescode}")
 	private String classesCode;
-	
+
 	/**
 	 * 分公司代码
 	 */
 	@Value("${cpic.unitcode}")
 	private String unitCode;
-	
+
 	@Autowired
 	private ApprovlService approvlService;
-	
+	@Autowired
+	private SmsCodeService smsCodeService;
+
 	public IZrxCommonService getBinding() throws ServiceException {
 		FreightCommonServiceLocator locator = new FreightCommonServiceLocator();
 		String url = _WsUrl+"FreightCommonService?wsdl";
 		locator.setFreightCommonServicePortEndpointAddress(url);
 		return locator.getFreightCommonServicePort();
 	}
-	
+
 	/**
 	 * 货运险承保接口
 	 * @Title: approvl 
@@ -88,36 +91,36 @@ public class WebServiceClient {
 	@Async("asyncServiceExecutor")
 	public void approvl(String xml, PayMessage payMessage) {
 		ApprovalRequest request = new ApprovalRequest();
-		
+
 		//用户信息
 		LoginUser userInfo = new LoginUser();
 		userInfo.setUserName(userName);
 		userInfo.setPassword(password);
-        //产品信息
+		//产品信息
 		ApprovalProduct productInfo = new ApprovalProduct();	
 		//航空险种
-		 productInfo.setClassesCode(classesCode);
+		productInfo.setClassesCode(classesCode);
 		ApprovalResponse reposne=null;
 		try {
 			//用户信息
 			request.setUserInfo(userInfo);
 			request.setProductInfo(productInfo);
 			//报文信息
-//			String policyInfo = new String(FileUtil.getBytesFromFile(new File("E:\\Users\\c_cailiang\\Desktop\\10月份开发\\海豚经纪国内旅客行李保险方案\\freight-11.xml")));
-//			policyInfo=	new String(policyInfo.getBytes());
-//			String[] strArray=policyInfo.split("\r\n");
-//			StringBuffer buff=new StringBuffer();
-//			for(int i=0;i<strArray.length;i++){
-//				buff.append(strArray[i]);
-//			}
-//			policyInfo=buff.toString();
+			//			String policyInfo = new String(FileUtil.getBytesFromFile(new File("E:\\Users\\c_cailiang\\Desktop\\10月份开发\\海豚经纪国内旅客行李保险方案\\freight-11.xml")));
+			//			policyInfo=	new String(policyInfo.getBytes());
+			//			String[] strArray=policyInfo.split("\r\n");
+			//			StringBuffer buff=new StringBuffer();
+			//			for(int i=0;i<strArray.length;i++){
+			//				buff.append(strArray[i]);
+			//			}
+			//			policyInfo=buff.toString();
 			request.setPolicyInfo(xml);
 			//默认
 			request.setCheckCode("hyxnew");
 			request.setFormCommit(true);
-	        ((Stub) this.getBinding()).setTimeout(60000);
+			((Stub) this.getBinding()).setTimeout(60000);
 			//投保
-	        reposne = this.getBinding().approval(request);
+			reposne = this.getBinding().approval(request);
 			SysMessage sysMessage = reposne.getSysMessage();
 			if (sysMessage != null) {
 				log.error("错误类型:" + sysMessage.getErrorType() + "\n");
@@ -125,11 +128,11 @@ public class WebServiceClient {
 				log.error("错误信息:" + sysMessage.getErrorMsg() + "\n");
 			}				
 			//log.info("返回报文: \r" + reposne.getPolicyInfo()+ "\n");
-			
+
 			String result = reposne.getPolicyInfo();
 			Approvl approvl =  xml2Approvl(result);
 			if(approvl != null) {
-				
+
 				Approvl approvlDB = approvlService.findByApplyId(approvl.getApplyId());
 				if(approvlDB != null) {//已有则修改
 					BeanUtils.copyProperties(approvl, approvlDB);
@@ -137,7 +140,7 @@ public class WebServiceClient {
 				}else {//新增
 					approvlService.save(approvl);
 				}
-				
+
 				String status = approvl.getStatus();
 				/**
 				 * 保单状态
@@ -146,11 +149,27 @@ public class WebServiceClient {
 				   19 提交失败----投保单录入成功，系统提交核保失败，需联系技术人员处理
 				 * 
 				 */
+				//发送短信状态
+				String smsStatus = null;
 				if(StringUtils.isNotEmpty(status)) {
 					if("10".equals(status)) {
 						//发送成功短信
+						smsStatus = smsCodeService.sendSmsCode(payMessage.getInsuranttel(), "飞行行李险已为您下单，订单编号为："+payMessage.getOrderNo());
+						if("success".equals(smsStatus)) {
+							log.info("订单号为:"+payMessage.getOrderNo()+"的订单短信通知成功");
+							//error("错误类型:" + sysMessage.getErrorType() + "\n");
+						}else {
+							log.error("订单号为:"+payMessage.getOrderNo()+"的订单短信通知失败");
+						}
 					}else if("19".equals(status)) {
 						//发送失败短信
+						smsStatus = smsCodeService.sendSmsCode(payMessage.getInsuranttel(), "飞行行李险下单失败！");
+						if("success".equals(smsStatus)) {
+							log.info("订单号为:"+payMessage.getOrderNo()+"的订单短信通知成功");
+							//error("错误类型:" + sysMessage.getErrorType() + "\n");
+						}else {
+							log.error("订单号为:"+payMessage.getOrderNo()+"的订单短信通知失败");
+						}
 					}
 				}
 			}
@@ -160,7 +179,7 @@ public class WebServiceClient {
 			//return null;
 		} 
 	}
-	
+
 	/**
 	 * 货运险承保接口应答报文转对象
 	 * @Title: xml2Approvl 
@@ -176,49 +195,49 @@ public class WebServiceClient {
 			try {
 				resultDo = XmlUtils.parseWithSAX(xml,"GBK");
 				Element rootElt = resultDo.getRootElement(); // 获取根节点
-				
+
 				Iterator<?> iter = rootElt.elementIterator("CONFIG"); // 获取根节点下的子节点CONFIG
 				while (iter.hasNext()) {
 					Element recordEle = (Element) iter.next();
-	                String ApplyId = recordEle.elementTextTrim("ApplyId"); // 拿到CONFIG节点下的子节点ApplyId值
-	                approvl.setApplyId(ApplyId);
-	                String type = recordEle.elementTextTrim("TYPE"); // 拿到CONFIG节点下的子节点TYPE值
-	                approvl.setType(type);
-	                
-	                String worktype = recordEle.elementTextTrim("WORKTYPE"); // 拿到CONFIG节点下的子节点WORKTYPE值
-	                approvl.setWorkType(worktype);
+					String ApplyId = recordEle.elementTextTrim("ApplyId"); // 拿到CONFIG节点下的子节点ApplyId值
+					approvl.setApplyId(ApplyId);
+					String type = recordEle.elementTextTrim("TYPE"); // 拿到CONFIG节点下的子节点TYPE值
+					approvl.setType(type);
+
+					String worktype = recordEle.elementTextTrim("WORKTYPE"); // 拿到CONFIG节点下的子节点WORKTYPE值
+					approvl.setWorkType(worktype);
 				}
-				
+
 				Iterator<?> iterResult = rootElt.elementIterator("RESULT"); // 获取根节点下的子节点RESULT
 				while (iterResult.hasNext()) {
 					Element recordEle = (Element) iterResult.next();
-	                String unitcode = recordEle.elementTextTrim("UNITCODE"); // 拿到RESULT节点下的子节点UNITCODE值
-	                approvl.setUnitCode(unitcode);
-	                
-	                String applyno = recordEle.elementTextTrim("APPLYNO"); // 拿到RESULT节点下的子节点APPLYNO值
-	                approvl.setApplyNo(applyno);
-	                
-	                String policyno = recordEle.elementTextTrim("POLICYNO"); // 拿到RESULT节点下的子节点POLICYNO值
-	                approvl.setPolicyNo(policyno);
-	                
-	                String status = recordEle.elementTextTrim("STATUS"); // 拿到RESULT节点下的子节点STATUS值
-	                approvl.setStatus(status);
-	                
-	                String comments = recordEle.elementTextTrim("COMMENTS"); // 拿到RESULT节点下的子节点COMMENTS值
-	                approvl.setComments(comments);
-	                
-	                String statusEpolicy = recordEle.elementTextTrim("STATUS_EPOLICY"); // 拿到RESULT节点下的子节点STATUS_EPOLICY值
-	                approvl.setStatusEpolicy(statusEpolicy);
-	                
-	                return approvl;
+					String unitcode = recordEle.elementTextTrim("UNITCODE"); // 拿到RESULT节点下的子节点UNITCODE值
+					approvl.setUnitCode(unitcode);
+
+					String applyno = recordEle.elementTextTrim("APPLYNO"); // 拿到RESULT节点下的子节点APPLYNO值
+					approvl.setApplyNo(applyno);
+
+					String policyno = recordEle.elementTextTrim("POLICYNO"); // 拿到RESULT节点下的子节点POLICYNO值
+					approvl.setPolicyNo(policyno);
+
+					String status = recordEle.elementTextTrim("STATUS"); // 拿到RESULT节点下的子节点STATUS值
+					approvl.setStatus(status);
+
+					String comments = recordEle.elementTextTrim("COMMENTS"); // 拿到RESULT节点下的子节点COMMENTS值
+					approvl.setComments(comments);
+
+					String statusEpolicy = recordEle.elementTextTrim("STATUS_EPOLICY"); // 拿到RESULT节点下的子节点STATUS_EPOLICY值
+					approvl.setStatusEpolicy(statusEpolicy);
+
+					return approvl;
 				}
 			} catch (DocumentException e) {
 				log.error("错误信息:" + e.getStackTrace());
 				return null;
 			}
-			
+
 		}
 		return null;
 	}
-	
+
 }

@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.util.EntityUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -17,6 +18,9 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.shenghesun.common.BaseResponse;
+import com.shenghesun.entity.CityCode;
+import com.shenghesun.service.CityService;
+import com.shenghesun.service.UserService;
 import com.shenghesun.util.HttpUtils;
 
 
@@ -24,7 +28,9 @@ import com.shenghesun.util.HttpUtils;
 @RequestMapping("/customer")
 class CustomerController {
 
-
+	@Autowired
+	private CityService cityService;
+	
 	/**通过航班号获取起始地信息
 	 * * @Title: login
 	 * @Description: TODO
@@ -108,5 +114,26 @@ class CustomerController {
 		baseResponse.setData(map);
 		return baseResponse;
 	}
+	
+	@GetMapping("getFlight")
+	@ResponseBody
+	public Object getFlightNo(String depCityCode,String arrCityCode){
+		BaseResponse baseResponse = new BaseResponse();
+		System.out.println(depCityCode+" "+arrCityCode);
+		CityCode city = new CityCode();
+		city.setCityName("兰州");
+		city.setCityCode("LHW");
+		city.setCityName("成都");
+		city.setCityCode("CTU");
+		
+		//HttpResponse response = null;
+		/*	Map<String, String> map = new HashMap<>();
+			
+			map.put("depCity", "");
+			map.put("arrCity", "");
+		baseResponse.setData(map);*/
+		return baseResponse;
+	}
+	
 
 }

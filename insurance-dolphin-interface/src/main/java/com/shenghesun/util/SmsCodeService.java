@@ -85,7 +85,7 @@ public class SmsCodeService {
 		// request.setOutId("yourOutId");
 		// 请求失败这里会抛ClientException异常
 		SendSmsResponse sendSmsResponse = acsClient.getAcsResponse(request);
-		System.out.println(sendSmsResponse.getCode());
+
 		return "success";
 
 	}
