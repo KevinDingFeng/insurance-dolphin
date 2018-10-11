@@ -115,7 +115,7 @@ public class WebServiceClientHelper {
 		//进出口货运险默认：other terms & conditions are equalent to the updated Open Policy.
 		//order.setFranchise("");
 		
-		datas.setOrder(order);
+		//datas.setOrder(order);
 
 		frdightcpidc.setDatas(datas);
 		frdightcpidc.setHeader(header);
