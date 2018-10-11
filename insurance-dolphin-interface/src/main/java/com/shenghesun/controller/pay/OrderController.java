@@ -8,6 +8,7 @@ import java.util.TreeMap;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -27,6 +28,9 @@ import com.shenghesun.util.wxpay.WXPayUtil;
 public class OrderController {
 	@Autowired
 	private PayService payService;
+	
+	@Value("${weixin.notify.url}")
+	private String notifyUrl;
 	
 	/**通过openId获取预支付id
 	 * * @Title: getPrePayId
@@ -54,7 +58,7 @@ public class OrderController {
         map.put("total_fee", "1");//标价金额			total_fee
         map.put("trade_type", "JSAPI");//交易类型			trade_type
         WXPayConfig conf = new WXPayConfigImpl();
-        WXPay wxPay = new WXPay(conf, "https://localhost:4455/wxpay/notify");
+        WXPay wxPay = new WXPay(conf, notifyUrl);
         Map<String,String> resultMap = wxPay.unifiedOrder(map);
 //        Iterator<Map.Entry<String, String>> it = map.entrySet().iterator();
 //             while (it.hasNext()) {
