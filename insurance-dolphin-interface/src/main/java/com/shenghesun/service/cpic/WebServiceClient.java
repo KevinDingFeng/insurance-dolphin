@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import com.shenghesun.entity.PayMessage;
 import com.shenghesun.entity.cpic.Approvl;
 import com.shenghesun.util.cpic.XmlUtils;
 
@@ -85,7 +86,7 @@ public class WebServiceClient {
 	 * 表明executeAsync方法进入的线程池是asyncServiceExecutor方法创建的
 	 **/ 
 	@Async("asyncServiceExecutor")
-	public void approvl(String xml) {
+	public void approvl(String xml, PayMessage payMessage) {
 		ApprovalRequest request = new ApprovalRequest();
 		
 		//用户信息

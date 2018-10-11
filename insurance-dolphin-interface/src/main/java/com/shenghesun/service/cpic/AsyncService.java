@@ -47,7 +47,7 @@ public class AsyncService {
     			String xml = payMessage2Xml(payMessage);
     			if(StringUtils.isNotEmpty(xml)) {
     				//货运险承保接口
-    				webServiceClient.approvl(xml);
+    				webServiceClient.approvl(xml,payMessage);
     			}
     		}
         }catch(Exception e){
