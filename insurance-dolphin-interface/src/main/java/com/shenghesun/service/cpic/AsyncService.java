@@ -42,7 +42,7 @@ public class AsyncService {
     		payMessage.setPayStatus(1);
     		payService.save(payMessage);
     		//测试用，正式删除
-    		payMessage.setOrderNo(StringGenerateUtils.generateId());
+//    		payMessage.setOrderNo(StringGenerateUtils.generateId());
     		if(payMessage != null) {
     			String xml = payMessage2Xml(payMessage);
     			if(StringUtils.isNotEmpty(xml)) {
