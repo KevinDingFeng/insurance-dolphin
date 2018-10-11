@@ -121,13 +121,12 @@ class CustomerController {
 		BaseResponse baseResponse = new BaseResponse();
 		System.out.println(depCityCode+" "+arrCityCode);
 		CityCode depCity = cityService.findByCityCode(depCityCode);
+		CityCode arrCity = cityService.findByCityCode(arrCityCode);
 		System.out.println(depCity.getCityName());
-		//HttpResponse response = null;
-		/*	Map<String, String> map = new HashMap<>();
-			
-			map.put("depCity", "");
-			map.put("arrCity", "");
-		baseResponse.setData(map);*/
+		Map<String, String> map = new HashMap<>();	
+		map.put("depCity", depCity.getCityName());
+		map.put("arrCity", arrCity.getCityName());
+		baseResponse.setData(map);
 		return baseResponse;
 	}
 	
