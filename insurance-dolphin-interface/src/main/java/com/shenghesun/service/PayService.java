@@ -4,6 +4,7 @@ package com.shenghesun.service;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -31,19 +32,20 @@ public class PayService {
 		JsonParser jp = new JsonParser();  
 		JsonArray jo = jp.parse(mark).getAsJsonArray();
 		List<Mark> markList = new ArrayList<>();
-		Mark m = new Mark();
+		
 		for(int i = 0;i<jo.size();i++) {
-			String result = jp.parse(jo.get(i).toString()).getAsJsonObject().get("mark").toString();
-			System.out.println(result);
-			if(result.length()>2) {
+			String result = jp.parse(jo.get(i).toString()).getAsJsonObject().get("mark").getAsString();
+			//System.out.println(result);
+			if(StringUtils.isNotEmpty(result)) {
+				Mark m = new Mark();
 				m.setMark(result);
 				m.setPayMessage(payMessage);
 				markList.add(m);
-				System.out.println(m);
+				//System.out.println(m);
 			}
 		}	
 		payMessage.setMark(markList);
-		System.out.println(payMessage.getMark().size());
+		//System.out.println(payMessage.getMark().size());
 		payMessage.setInsurancecardcode(payMessage.getApplycardcode());
 		payMessage.setEffectdate(payMessage.getSaildate());
 		payMessage.setInsurantname(payMessage.getApplyname());

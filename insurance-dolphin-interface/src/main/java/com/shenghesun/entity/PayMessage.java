@@ -7,8 +7,6 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
@@ -248,8 +246,7 @@ public class PayMessage extends BaseEntity implements Serializable{
 
 	//@ManyToOne(fetch = FetchType.EAGER,cascade=CascadeType.MERGE)
 	
-	@OneToMany(fetch = FetchType.EAGER,cascade=CascadeType.MERGE)
-	@JoinColumn(name = "mark")
+	@OneToMany(mappedBy = "payMessage",cascade=CascadeType.ALL,fetch=FetchType.LAZY)
 	private List<Mark> mark;
 	
 	private String markString;
