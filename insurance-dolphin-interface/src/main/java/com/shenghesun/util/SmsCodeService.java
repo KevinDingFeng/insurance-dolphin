@@ -94,10 +94,11 @@ public class SmsCodeService {
 			// request.setOutId("yourOutId");
 			// 请求失败这里会抛ClientException异常
 			SendSmsResponse sendSmsResponse = acsClient.getAcsResponse(request);
-			log.info(sendSmsResponse.getCode());
+			
 			if(sendSmsResponse != null && "OK".equals(sendSmsResponse.getCode())){
 				return "success";
 			}
+			log.info(sendSmsResponse.getCode());
 			return "failed";
 		} catch (ClientException e) {
 			log.error("Exception {} in {} ", e.getMessage(), "sendSmsCode:"+number);
