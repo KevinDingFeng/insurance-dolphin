@@ -101,7 +101,7 @@ public class SmsCodeService {
 			return "failed";
 		} catch (ClientException e) {
 			log.error("Exception {} in {} ", e.getMessage(), "sendSmsCode:"+number);
-			return null;
+			return "failed";
 		}
 	}
 
