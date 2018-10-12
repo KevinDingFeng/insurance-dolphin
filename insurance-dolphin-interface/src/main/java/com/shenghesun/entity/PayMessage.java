@@ -9,6 +9,7 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamOmitField;
@@ -76,9 +77,12 @@ public class PayMessage extends BaseEntity implements Serializable{
 	@Column(length=8)
 	private String classtype;
 	
-/*	@XStreamAlias("MARK")
-	@Column(length=500)
-	private String mark;*/
+	/**
+	 * 行李号不入库，接口用
+	 */
+	@XStreamAlias("MARK")
+	@Transient
+	private String markNo;
 	
 	@XStreamAlias("QUANTITY")
 	@Column(length=500)
@@ -172,6 +176,12 @@ public class PayMessage extends BaseEntity implements Serializable{
 	@Column(columnDefinition="DECIMAL(16,2)")
 	private Integer premium;
 	
+	/**
+	 * 保单总金额
+	 */
+	@Column(columnDefinition="DECIMAL(16,2)")
+	private Integer orderAmount;
+	
 	@XStreamAlias("FCURRENCYCODE")
 	@Column
 	private String fcurrencycode="01";
@@ -245,9 +255,10 @@ public class PayMessage extends BaseEntity implements Serializable{
 	private Integer payStatus = 0; 
 
 	//@ManyToOne(fetch = FetchType.EAGER,cascade=CascadeType.MERGE)
-	
-	@OneToMany(mappedBy = "payMessage",cascade=CascadeType.ALL,fetch=FetchType.LAZY)
+	@XStreamOmitField
+	@OneToMany(mappedBy = "payMessage",cascade=CascadeType.ALL,fetch = FetchType.EAGER)
 	private List<Mark> mark;
 	
+	@XStreamOmitField
 	private String markString;
 }

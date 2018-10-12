@@ -18,7 +18,6 @@ import org.springframework.stereotype.Service;
 
 import com.shenghesun.entity.PayMessage;
 import com.shenghesun.entity.cpic.Approvl;
-import com.shenghesun.util.SmsCodeService;
 import com.shenghesun.util.cpic.XmlUtils;
 
 import cn.com.cpic.wss.propertyinsurance.commonservice.freight.FreightCommonServiceLocator;
@@ -65,8 +64,7 @@ public class WebServiceClient {
 
 	@Autowired
 	private ApprovlService approvlService;
-	@Autowired
-	private SmsCodeService smsCodeService;
+	
 
 	public IZrxCommonService getBinding() throws ServiceException {
 		FreightCommonServiceLocator locator = new FreightCommonServiceLocator();
@@ -88,8 +86,8 @@ public class WebServiceClient {
 	 * asyncServiceExecutor是前面ExecutorConfig.java中的方法名，
 	 * 表明executeAsync方法进入的线程池是asyncServiceExecutor方法创建的
 	 **/ 
-	@Async("asyncServiceExecutor")
-	public void approvl(String xml, PayMessage payMessage) {
+	//@Async("asyncServiceExecutor")
+	public boolean approvl(String xml, PayMessage payMessage) {
 		ApprovalRequest request = new ApprovalRequest();
 
 		//用户信息
@@ -130,7 +128,7 @@ public class WebServiceClient {
 			//log.info("返回报文: \r" + reposne.getPolicyInfo()+ "\n");
 
 			String result = reposne.getPolicyInfo();
-			Approvl approvl =  xml2Approvl(result);
+			Approvl approvl =  xml2Approvl(result,payMessage);
 			if(approvl != null) {
 
 				Approvl approvlDB = approvlService.findByApplyId(approvl.getApplyId());
@@ -150,33 +148,19 @@ public class WebServiceClient {
 				 * 
 				 */
 				//发送短信状态
-				String smsStatus = null;
+//				String smsStatus = null;
 				if(StringUtils.isNotEmpty(status)) {
 					if("10".equals(status)) {
-						//发送成功短信
-						smsStatus = smsCodeService.sendSmsCode(payMessage.getInsuranttel(), payMessage.getOrderNo());
-						if("success".equals(smsStatus)) {
-							log.info("订单号为:"+payMessage.getOrderNo()+"的订单短信通知成功");
-							//error("错误类型:" + sysMessage.getErrorType() + "\n");
-						}else {
-							log.error("订单号为:"+payMessage.getOrderNo()+"的订单短信通知失败");
-						}
+						return true;
 					}else if("19".equals(status)) {
-						//发送失败短信
-						smsStatus = smsCodeService.sendSmsCode(payMessage.getInsuranttel(), "飞行行李险下单失败！");
-						if("success".equals(smsStatus)) {
-							log.info("订单号为:"+payMessage.getOrderNo()+"的订单短信通知成功");
-							//error("错误类型:" + sysMessage.getErrorType() + "\n");
-						}else {
-							log.error("订单号为:"+payMessage.getOrderNo()+"的订单短信通知失败");
-						}
+						return false;
 					}
 				}
 			}
-			//return reposne.getPolicyInfo();
+			return false;
 		} catch (Exception e) {
 			log.error(e.getMessage());
-			//return null;
+			return false;
 		} 
 	}
 
@@ -188,9 +172,10 @@ public class WebServiceClient {
 	 * @author yangzp
 	 * @date 2018年10月10日下午5:18:00
 	 **/ 
-	private Approvl xml2Approvl(String xml) {
+	private Approvl xml2Approvl(String xml, PayMessage payMessage) {
 		if(StringUtils.isNotEmpty(xml)) {
 			Approvl approvl = new Approvl();
+			approvl.setOrderNo(payMessage.getOrderNo());
 			Document resultDo;
 			try {
 				resultDo = XmlUtils.parseWithSAX(xml,"GBK");

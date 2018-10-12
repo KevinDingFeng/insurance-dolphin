@@ -28,6 +28,12 @@ public class Approvl extends BaseEntity implements Serializable {
 	 */
 	private static final long serialVersionUID = -2157720916902075615L;
 	
+	/**
+	 * 订单号
+	 */
+	@Column(length=100)
+	private String orderNo;
+	
 	@Column(length=45)
 	private String applyId;
 	

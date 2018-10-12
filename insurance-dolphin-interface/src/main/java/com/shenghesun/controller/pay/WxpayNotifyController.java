@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.shenghesun.service.cpic.AsyncService;
+import com.shenghesun.util.SmsCodeService;
 
 @RestController
 @RequestMapping(value = "/wxpay")
@@ -84,9 +85,21 @@ public class WxpayNotifyController {
 	public String testIndex() {
 		System.out.println("访问成功");
 		
-		String orderNo = "1539152190246z5";
+		String orderNo = "1539343329073g0";
 		asyncService.executeAsync(orderNo);
 		
 		return "成功！";
+	}
+	
+	
+	@Autowired
+	private SmsCodeService smsCodeService;
+	
+	@RequestMapping("/sendSmsCode")
+	public String sendSmsCode() {
+		
+		smsCodeService.sendSmsCode("18610927194", "1539323514746z4");
+		
+		return "发送短信成功！";
 	}
 }

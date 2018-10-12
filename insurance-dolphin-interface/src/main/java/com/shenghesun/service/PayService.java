@@ -43,7 +43,9 @@ public class PayService {
 				markList.add(m);
 				//System.out.println(m);
 			}
-		}	
+		}
+		//设置保单总金额
+		payMessage.setOrderAmount((int) (payMessage.getAmount()*payMessage.getRate()*markList.size()));
 		payMessage.setMark(markList);
 		//System.out.println(payMessage.getMark().size());
 		payMessage.setInsurancecardcode(payMessage.getApplycardcode());
