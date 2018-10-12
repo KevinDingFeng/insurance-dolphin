@@ -154,7 +154,7 @@ public class WebServiceClient {
 				if(StringUtils.isNotEmpty(status)) {
 					if("10".equals(status)) {
 						//发送成功短信
-						smsStatus = smsCodeService.sendSmsCode(payMessage.getInsuranttel(), "飞行行李险已为您下单，订单编号为："+payMessage.getOrderNo());
+						smsStatus = smsCodeService.sendSmsCode(payMessage.getInsuranttel(), payMessage.getOrderNo());
 						if("success".equals(smsStatus)) {
 							log.info("订单号为:"+payMessage.getOrderNo()+"的订单短信通知成功");
 							//error("错误类型:" + sysMessage.getErrorType() + "\n");
