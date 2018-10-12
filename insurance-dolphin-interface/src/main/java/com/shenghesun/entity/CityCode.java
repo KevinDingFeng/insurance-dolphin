@@ -21,4 +21,6 @@ public class CityCode extends BaseEntity implements Serializable{
 	private String cityName;
 	@Column
 	private String cityCode;
+	@Column
+	private String cityType;
 }

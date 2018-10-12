@@ -1,9 +1,15 @@
 package com.shenghesun.entity;
 
 import java.io.Serializable;
+import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -16,7 +22,7 @@ import lombok.EqualsAndHashCode;
 @Entity
 @Table
 @Data
-@EqualsAndHashCode(callSuper = true)
+@EqualsAndHashCode(exclude = {"mark"},callSuper = true)
 @XStreamAlias("DATA")
 public class PayMessage extends BaseEntity implements Serializable{
 
@@ -72,9 +78,9 @@ public class PayMessage extends BaseEntity implements Serializable{
 	@Column(length=8)
 	private String classtype;
 	
-	@XStreamAlias("MARK")
+/*	@XStreamAlias("MARK")
 	@Column(length=500)
-	private String mark;
+	private String mark;*/
 	
 	@XStreamAlias("QUANTITY")
 	@Column(length=500)
@@ -240,4 +246,11 @@ public class PayMessage extends BaseEntity implements Serializable{
 	@Column
 	private Integer payStatus = 0; 
 
+	//@ManyToOne(fetch = FetchType.EAGER,cascade=CascadeType.MERGE)
+	
+	@OneToMany(fetch = FetchType.EAGER,cascade=CascadeType.MERGE)
+	@JoinColumn(name = "mark")
+	private List<Mark> mark;
+	
+	private String markString;
 }

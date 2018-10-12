@@ -45,9 +45,9 @@ public class OrderController {
 	@ResponseBody
 	public Object getPrePayId(HttpServletRequest request,PayMessage payMessage) throws Exception {
 		//完善投保对象信息
-		payMessage = payService.completePayMessage(payMessage);
 		String orderNo = System.currentTimeMillis() + RandomUtil.randomString(2);
 		payMessage.setOrderNo(orderNo);
+		payMessage = payService.completePayMessage(payMessage);
 		
 		BaseResponse response = new BaseResponse();
 		Map<String,String> map = new HashMap<>();

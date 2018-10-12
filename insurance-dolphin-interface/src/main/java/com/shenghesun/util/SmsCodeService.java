@@ -115,5 +115,9 @@ public class SmsCodeService {
 				.matcher(num);
 		return m.find();// boolean
 	}
+	public static void main(String[] args) {
+		SmsCodeService sms = new SmsCodeService();
+		
+	}
 
 }
