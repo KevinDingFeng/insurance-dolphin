@@ -16,4 +16,7 @@ public class CityService {
 	public CityCode findByCityCode(String code) {
 		return cityDao.findByCityCode(code);
 	}
+	public CityCode findByCityName(String name) {
+		return cityDao.findByCityName(name);
+	}
 }

@@ -10,4 +10,6 @@ import com.shenghesun.entity.CityCode;
 public interface CityDao extends PagingAndSortingRepository<CityCode, Long>, JpaSpecificationExecutor<CityCode>{
 	
 	public CityCode findByCityCode(String code);
+	
+	public CityCode findByCityName(String name);
 }

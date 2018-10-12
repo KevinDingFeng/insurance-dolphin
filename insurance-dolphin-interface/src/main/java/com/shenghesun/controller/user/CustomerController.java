@@ -18,6 +18,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.shenghesun.common.BaseResponse;
+import com.shenghesun.entity.City;
 import com.shenghesun.entity.CityCode;
 import com.shenghesun.service.CityService;
 import com.shenghesun.service.UserService;
@@ -117,17 +118,37 @@ class CustomerController {
 
 	@GetMapping("getFlight")
 	@ResponseBody
-	public Object getFlightNo(String depCityCode,String arrCityCode){
+	public Object getFlightNo(City city){
 		BaseResponse baseResponse = new BaseResponse();
-		System.out.println(depCityCode+" "+arrCityCode);
-		CityCode depCity = cityService.findByCityCode(depCityCode);
-		CityCode arrCity = cityService.findByCityCode(arrCityCode);
-		System.out.println(depCity.getCityName());
 		Map<String, String> map = new HashMap<>();	
-		map.put("depCity", depCity.getCityName());
-		map.put("arrCity", arrCity.getCityName());
-		if(depCity.getCityType()=="2"||arrCity.getCityType()=="2") {
-			map.put("total_fee", "2000");
+		if(city.getArrCityCode()!=null&&city.getDepCityCode()!=null) {
+			//扫描二维码逻辑方法
+			System.out.println(city.getArrCityCode()+" "+city.getDepCityCode());
+			CityCode depCity = cityService.findByCityCode(city.getDepCityCode());
+			CityCode arrCity = cityService.findByCityCode(city.getArrCityCode());
+			
+			map.put("depCity", depCity.getCityName());
+			map.put("arrCity", arrCity.getCityName());
+			if(depCity.equals("2")||arrCity.getCityType().equals("2")) {
+				System.out.println("国际航班");
+				map.put("total_fee", "2000");
+			}else {
+				System.out.println("国内航班");
+				map.put("total_fee", "1000");
+			}
+		}else {
+			//手动输入逻辑方法
+			System.out.println(city.getArrCity()+" "+city.getDepCity());
+			CityCode depCity = cityService.findByCityName(city.getDepCity());
+			CityCode arrCity = cityService.findByCityName(city.getArrCity());
+	
+			if(depCity.equals("2")||arrCity.getCityType().equals("2")) {
+				System.out.println("国际航班");
+				map.put("total_fee", "2000");
+			}else {
+				System.out.println("国内航班");
+				map.put("total_fee", "1000");
+			}
 		}
 		baseResponse.setData(map);
 		return baseResponse;
