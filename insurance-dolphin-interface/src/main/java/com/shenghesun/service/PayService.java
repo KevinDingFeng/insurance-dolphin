@@ -52,7 +52,6 @@ public class PayService {
 		payMessage.setEffectdate(payMessage.getSaildate());
 		payMessage.setInsurantname(payMessage.getApplyname());
 		payMessage.setInvamount(payMessage.getAmount());
-		payMessage.setPremium((int) (payMessage.getAmount()*payMessage.getRate()));
 		if(payMessage.getClassestype().equals("1")) {
 			payMessage.setClasstype("11040400");
 		}else {

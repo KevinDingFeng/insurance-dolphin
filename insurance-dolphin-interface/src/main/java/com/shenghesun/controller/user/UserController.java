@@ -151,6 +151,7 @@ public class UserController {
 		}
 		Map<String, Object> data = new HashMap<>();
         data.put("userId", user.getId());
+        data.put("openId", user.getOpenId());
         response.setData(data);
 		return response;
 	}

@@ -14,7 +14,7 @@ import lombok.EqualsAndHashCode;
 @Table
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class CityCode extends BaseEntity implements Serializable{
+public class CityCode extends BaseEntity implements Serializable,Comparable<CityCode>{
 
 	private static final long serialVersionUID = 2443277338932417258L;
 	@Column
@@ -23,4 +23,8 @@ public class CityCode extends BaseEntity implements Serializable{
 	private String cityCode;
 	@Column
 	private String cityType;
+	@Override
+	public int compareTo(CityCode o) {	
+		return this.id.compareTo(o.id);
+	}
 }
