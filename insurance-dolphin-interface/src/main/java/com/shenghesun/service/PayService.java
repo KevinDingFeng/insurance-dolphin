@@ -52,10 +52,13 @@ public class PayService {
 		payMessage.setEffectdate(payMessage.getSaildate());
 		payMessage.setInsurantname(payMessage.getApplyname());
 		payMessage.setInvamount(payMessage.getAmount());
+		
 		if(payMessage.getClassestype().equals("1")) {
 			payMessage.setClasstype("11040400");
+			payMessage.setPremium(10);
 		}else {
 			payMessage.setClasstype("12040200");
+			payMessage.setPremium(20);
 		}
 		return payMessage;
 	}
