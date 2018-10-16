@@ -102,7 +102,7 @@ public class PayMessage extends BaseEntity implements Serializable{
 	
 	@XStreamAlias("FLIGHTAREACODE")
 	@Column(length=10)
-	private String flightareacode;
+	private String flightareacode="11040400";
 	
 	@XStreamAlias("KIND")
 	@Column(length=2)
@@ -137,7 +137,7 @@ public class PayMessage extends BaseEntity implements Serializable{
 	private String mainitemcode="HK";
 	
 	@XStreamAlias("ITEMCONTENT")
-	@Column(columnDefinition = "BLOB")
+	@Column(length=500)
 	private String itemcontent="国内航空货物运输保险条款";
 	
 	@XStreamAlias("ITEMADDCODE")
@@ -145,7 +145,7 @@ public class PayMessage extends BaseEntity implements Serializable{
 	private String itemaddcode;
 	
 	@XStreamAlias("ITEMADDCONTENT")
-	@Column(columnDefinition = "BLOB")
+	@Column(length=500)
 	private String itemaddcontent;
 	
 	@XStreamAlias("CURRENCYCODE")
@@ -179,6 +179,7 @@ public class PayMessage extends BaseEntity implements Serializable{
 	/**
 	 * 保单总金额
 	 */
+	@XStreamOmitField
 	@Column(columnDefinition="DECIMAL(16,2)")
 	private Integer orderAmount;
 	
@@ -242,6 +243,9 @@ public class PayMessage extends BaseEntity implements Serializable{
 	@Column
 	private String handlercode;
 	
+	/**
+	 * 保险类型：1国内；2国际
+	 */
 	@XStreamOmitField
 	@Column(length=1)
 	private String classestype;
