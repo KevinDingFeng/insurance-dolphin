@@ -5,6 +5,7 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -53,11 +54,17 @@ public class AsyncService {
 //    		payMessage.setOrderNo(StringGenerateUtils.generateId());
     		
     		if(payMessage != null) {
-    			List<Mark> markList = payMessage.getMark();
+    			PayMessage pmTemp = new PayMessage();
+    			BeanUtils.copyProperties(payMessage, pmTemp);
+    			pmTemp.setId(null);
+    			pmTemp.setCreation(null);
+    			pmTemp.setLastModified(null);
+    			pmTemp.setVersion(null);
+    			List<Mark> markList = pmTemp.getMark();
     			if(!CollectionUtils.isEmpty(markList)) {
     				boolean flag = true;
     				for(Mark mark : markList) {
-    					String xml = payMessage2Xml(payMessage,mark.getMark());
+    					String xml = payMessage2Xml(pmTemp,mark.getMark());
             			if(StringUtils.isNotEmpty(xml)) {
             				//货运险承保接口
             				flag = webServiceClient.approvl(xml,payMessage);
@@ -79,7 +86,7 @@ public class AsyncService {
 						//发送失败短信
 						smsStatus = smsCodeService.sendSmsCode(payMessage.getInsuranttel(), "飞行行李险下单失败！");
 						if("success".equals(smsStatus)) {
-							logger.info("订单号为:"+payMessage.getOrderNo()+"的订单短信通知成功");
+							logger.info("订单号为:"+payMessage.getOrderNo()+"的订单失败短信通知成功");
 						}else {
 							logger.info("订单号为:"+payMessage.getOrderNo()+"的订单短信通知失败");
 						}
@@ -109,11 +116,14 @@ public class AsyncService {
 		
 		Header header = new Header();
 		header.setApplyid(StringGenerateUtils.generateId());
-		header.setClassestype(payMessage.getClasstype());
+		header.setClassestype(payMessage.getClassestype());
 		freightcpic.setHeader(header);
 		
 		Datas datas = new Datas();
 		payMessage.setMarkNo(markNo);
+//		if("2".equals(payMessage.getClassestype())) {
+//			payMessage.setFlightareacode("12040200");
+//		}
 		datas.setPayMessage(payMessage);
 		
 		freightcpic.setDatas(datas);

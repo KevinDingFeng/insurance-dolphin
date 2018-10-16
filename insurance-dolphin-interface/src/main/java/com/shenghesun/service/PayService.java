@@ -57,7 +57,7 @@ public class PayService {
 			payMessage.setClasstype("11040400");
 			payMessage.setPremium(10);
 		}else {
-			payMessage.setClasstype("12040200");
+			payMessage.setClasstype("11040400");
 			payMessage.setPremium(20);
 		}
 		return payMessage;

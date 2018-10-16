@@ -48,6 +48,7 @@ public class PayMessage extends BaseEntity implements Serializable{
 	@Column(length=50)
 	private String applycarttype="1170010001";
 	
+	@XStreamOmitField
 	@XStreamAlias("APPLYCARDCODE")
 	@Column(length=50)
 	private String applycardcode;
@@ -61,10 +62,12 @@ public class PayMessage extends BaseEntity implements Serializable{
 	@Column(length=50)
 	private String insurancecardtype="1170010001";
 	
+	@XStreamOmitField
 	@XStreamAlias("INSURANCECARDCODE")
 	@Column(length=50)
 	private String insurancecardcode;
 	
+	@XStreamOmitField
 	@XStreamAlias("INSURANTTEL")
 	@Column
 	private String insuranttel;
@@ -110,7 +113,7 @@ public class PayMessage extends BaseEntity implements Serializable{
 	
 	@XStreamAlias("KINDNAME")
 	@Column(length=30)
-	private String kindname="航空";
+	private String kindname="飞机";
 	
 	@XStreamAlias("VOYNO")
 	@Column(length=30)
@@ -263,6 +266,7 @@ public class PayMessage extends BaseEntity implements Serializable{
 	@OneToMany(mappedBy = "payMessage",cascade=CascadeType.ALL,fetch = FetchType.EAGER)
 	private List<Mark> mark;
 	
+	@Transient
 	@XStreamOmitField
 	private String markString;
 }
