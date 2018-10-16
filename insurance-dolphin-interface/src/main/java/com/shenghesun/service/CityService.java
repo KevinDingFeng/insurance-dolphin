@@ -6,9 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.shenghesun.dao.CityDao;
-import com.shenghesun.dao.UserDao;
 import com.shenghesun.entity.CityCode;
-import com.shenghesun.entity.PayMessage;
 
 @Service
 public class CityService {
@@ -22,7 +20,12 @@ public class CityService {
 		return cityDao.findByCityName(name);
 	}
 	public CityCode findByCityNameLike(String name) {
-		return cityDao.findByCityNameLike(name).get(0);
+		try {
+			CityCode cityCode = cityDao.findByCityNameLike(name).get(0);
+			return cityCode;
+		} catch (Exception e) {
+			return null;
+		}	
 	}
 	public List<CityCode> findAll(){
 		return (List<CityCode>) cityDao.findAll();

@@ -37,6 +37,7 @@ class CustomerController {
 		String arrCityName = city.getArrCity();
 		CityCode depCity = null;
 		CityCode arrCity = null;
+		//扫描登机牌二维码获取城市信息
 		if(city.getArrCityCode()!=null&&city.getDepCityCode()!=null) {
 			//判断redis中是否存在depCityCode
 			if(redisUtil.exists(depCityCode)){
@@ -69,15 +70,17 @@ class CustomerController {
 				map.put("classtype", "1");
 			}
 		}else {
-			//手动输入逻辑方法
+			//手动输入城市获取国际还是国外
 			//判断redis中是否存在depCity
 			if(redisUtil.exists(depCityName)){
 				String dep = (String) redisUtil.getObj(depCityName);
 				depCity = JSON.parseObject(dep, CityCode.class);
 			}else {
 				depCity = cityService.findByCityNameLike("%"+city.getDepCity()+"%");
-				String json = JSON.toJSONString(depCity, true); 
-				redisUtil.set(depCityName, depCity);
+				if(depCity!=null) {
+					String json = JSON.toJSONString(depCity, true); 
+					redisUtil.set(depCityName, depCity);
+				}	
 			}
 			//判断redis中是否存在arrCity
 			if(redisUtil.exists(arrCityName)){
@@ -85,18 +88,22 @@ class CustomerController {
 				arrCity = JSON.parseObject(dep, CityCode.class);
 			}else {
 				arrCity = cityService.findByCityNameLike("%"+city.getArrCity()+"%");
-				String json = JSON.toJSONString(arrCity, true); 
-				redisUtil.set(arrCityName, arrCity);
+				if(arrCity!=null) {
+					String json = JSON.toJSONString(arrCity, true); 
+					redisUtil.set(arrCityName, arrCity);
+				}	
 			}
-			if(depCity.getCityType().equals("2")||arrCity.getCityType().equals("2")) {
-				System.out.println("国际航班");
-				map.put("classtype", "2");
-				map.put("total_fee", "2000");
-			}else {
-				System.out.println("国内航班");
-				map.put("classtype", "1");
-				map.put("total_fee", "1000");
-			}
+			if(depCity!=null && arrCity!=null) {
+				if(depCity.getCityType().equals("2")||arrCity.getCityType().equals("2")) {
+					System.out.println("国际航班");
+					map.put("classtype", "2");
+					map.put("total_fee", "20");
+				}else {
+					System.out.println("国内航班");
+					map.put("classtype", "1");
+					map.put("total_fee", "10");
+				}
+			}		
 		}
 		baseResponse.setData(map);
 		return baseResponse;

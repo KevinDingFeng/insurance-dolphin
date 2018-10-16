@@ -45,20 +45,22 @@ public class PayService {
 			}
 		}
 		//设置保单总金额
-		payMessage.setOrderAmount((int) (payMessage.getAmount()*payMessage.getRate()*markList.size()));
 		payMessage.setMark(markList);
 		//System.out.println(payMessage.getMark().size());
 		payMessage.setInsurancecardcode(payMessage.getApplycardcode());
 		payMessage.setEffectdate(payMessage.getSaildate());
 		payMessage.setInsurantname(payMessage.getApplyname());
-		payMessage.setInvamount(payMessage.getAmount());
 		
 		if(payMessage.getClassestype().equals("1")) {
 			payMessage.setClasstype("11040400");
 			payMessage.setPremium(10);
+			payMessage.setInvamount(1000);
+			payMessage.setAmount(1000);
 		}else {
 			payMessage.setClasstype("11040400");
 			payMessage.setPremium(20);
+			payMessage.setInvamount(2000);
+			payMessage.setAmount(2000);
 		}
 		return payMessage;
 	}
