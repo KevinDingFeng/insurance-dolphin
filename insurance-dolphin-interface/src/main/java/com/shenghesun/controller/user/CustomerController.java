@@ -3,6 +3,8 @@ package com.shenghesun.controller.user;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,7 +22,8 @@ import com.shenghesun.util.RedisUtil;
 @RestController
 @RequestMapping("/customer")
 class CustomerController {
-
+	private final Logger logger = LoggerFactory.getLogger(this.getClass());
+	
 	@Autowired
 	private CityService cityService;
 	@Autowired
@@ -45,8 +48,10 @@ class CustomerController {
 				depCity = JSON.parseObject(dep, CityCode.class);
 			}else {
 				depCity = cityService.findByCityCode(depCityCode);
-				String json = JSON.toJSONString(depCity, true);
-				redisUtil.set(depCityCode, depCity);
+				if(depCity!=null) {
+					String json = JSON.toJSONString(depCity, true);
+					redisUtil.set(depCityCode, depCity);
+				}	
 			}
 			//判断redis中是否存在arrCity
 			if(redisUtil.exists(arrCityCode)){
@@ -54,9 +59,10 @@ class CustomerController {
 				arrCity = JSON.parseObject(arr, CityCode.class);
 			}else {
 				arrCity = cityService.findByCityCode(arrCityCode);
-				String json = JSON.toJSONString(arrCity, true); 
-				redisUtil.set(arrCityCode, arrCity);
-
+				if(arrCity!=null) {
+					String json = JSON.toJSONString(arrCity, true); 
+					redisUtil.set(arrCityCode, arrCity);
+				}
 			}
 			map.put("depCity", depCity.getCityName());
 			map.put("arrCity", arrCity.getCityName());
@@ -74,7 +80,12 @@ class CustomerController {
 			//判断redis中是否存在depCity
 			if(redisUtil.exists(depCityName)){
 				String dep = (String) redisUtil.getObj(depCityName);
-				depCity = JSON.parseObject(dep, CityCode.class);
+				try {
+					depCity = JSON.parseObject(dep, CityCode.class);
+				} catch (Exception e) {
+					logger.error("城市代码解析出错，错误城市名称："+depCityName);
+					return baseResponse;
+				}
 			}else {
 				depCity = cityService.findByCityNameLike("%"+city.getDepCity()+"%");
 				if(depCity!=null) {
@@ -85,7 +96,12 @@ class CustomerController {
 			//判断redis中是否存在arrCity
 			if(redisUtil.exists(arrCityName)){
 				String dep = (String) redisUtil.getObj(arrCityName);
-				arrCity = JSON.parseObject(dep, CityCode.class);
+				try {
+					arrCity = JSON.parseObject(dep, CityCode.class);
+				} catch (Exception e) {
+					logger.error("城市代码解析出错，错误城市名称："+arrCityName);
+					return baseResponse;
+				}
 			}else {
 				arrCity = cityService.findByCityNameLike("%"+city.getArrCity()+"%");
 				if(arrCity!=null) {
