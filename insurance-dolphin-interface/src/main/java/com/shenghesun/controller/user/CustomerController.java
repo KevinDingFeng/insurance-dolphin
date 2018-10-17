@@ -83,8 +83,12 @@ class CustomerController {
 				try {
 					depCity = JSON.parseObject(dep, CityCode.class);
 				} catch (Exception e) {
+					depCity = cityService.findByCityNameLike("%"+city.getDepCity()+"%");
+					if(depCity!=null) {
+						String json = JSON.toJSONString(depCity, true); 
+						redisUtil.set(depCityName, json);
+					}	
 					logger.error("城市代码解析出错，错误城市名称："+depCityName);
-					return baseResponse;
 				}
 			}else {
 				depCity = cityService.findByCityNameLike("%"+city.getDepCity()+"%");
@@ -99,8 +103,12 @@ class CustomerController {
 				try {
 					arrCity = JSON.parseObject(dep, CityCode.class);
 				} catch (Exception e) {
+					arrCity = cityService.findByCityNameLike("%"+city.getArrCity()+"%");
+					if(arrCity!=null) {
+						String json = JSON.toJSONString(arrCity, true); 
+						redisUtil.set(arrCityName, json);
+					}	
 					logger.error("城市代码解析出错，错误城市名称："+arrCityName);
-					return baseResponse;
 				}
 			}else {
 				arrCity = cityService.findByCityNameLike("%"+city.getArrCity()+"%");
@@ -119,7 +127,16 @@ class CustomerController {
 					map.put("classtype", "1");
 					map.put("total_fee", "10");
 				}
-			}		
+			}else {
+				if(depCity==null) {
+					map.put("total_fee", "00");
+					logger.info("用户输入城市不存在,城市名称为："+depCityName);
+				}else {
+					map.put("total_fee", "01");
+					logger.info("用户输入城市不存在,城市名称为："+arrCityName);
+				}
+			}
+			
 		}
 		baseResponse.setData(map);
 		return baseResponse;
