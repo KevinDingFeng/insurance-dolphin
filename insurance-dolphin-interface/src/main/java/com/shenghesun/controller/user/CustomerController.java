@@ -79,7 +79,7 @@ class CustomerController {
 				depCity = cityService.findByCityNameLike("%"+city.getDepCity()+"%");
 				if(depCity!=null) {
 					String json = JSON.toJSONString(depCity, true); 
-					redisUtil.set(depCityName, depCity);
+					redisUtil.set(depCityName, json);
 				}	
 			}
 			//判断redis中是否存在arrCity
@@ -90,7 +90,7 @@ class CustomerController {
 				arrCity = cityService.findByCityNameLike("%"+city.getArrCity()+"%");
 				if(arrCity!=null) {
 					String json = JSON.toJSONString(arrCity, true); 
-					redisUtil.set(arrCityName, arrCity);
+					redisUtil.set(arrCityName, json);
 				}	
 			}
 			if(depCity!=null && arrCity!=null) {
