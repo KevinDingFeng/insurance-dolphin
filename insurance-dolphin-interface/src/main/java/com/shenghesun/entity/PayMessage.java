@@ -115,6 +115,7 @@ public class PayMessage extends BaseEntity implements Serializable{
 	@Column(length=30)
 	private String kindname="飞机";
 	
+	@XStreamOmitField
 	@XStreamAlias("VOYNO")
 	@Column(length=30)
 	private String voyno;
@@ -159,6 +160,7 @@ public class PayMessage extends BaseEntity implements Serializable{
 	@Column(length=1)
 	private String pricecond="1";
 	
+	@XStreamOmitField
 	@XStreamAlias("INVAMOUNT")
 	@Column(columnDefinition="DECIMAL(16,2)")
 	private Integer invamount;
