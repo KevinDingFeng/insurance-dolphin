@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import com.alibaba.fastjson.JSON;
 import com.shenghesun.dao.CityDao;
@@ -30,12 +31,12 @@ public class CityService {
 		return cityDao.findByCityName(name);
 	}
 	public CityCode findByCityNameLike(String name) {
-		try {
-			CityCode cityCode = cityDao.findByCityNameLike(name).get(0);
-			return cityCode;
-		} catch (Exception e) {
+		List<CityCode> cityList = cityDao.findByCityNameLike(name);
+		if (CollectionUtils.isEmpty(cityList)) {
 			return null;
-		}	
+		}
+		// CityCode cityCode = cityDao.findByCityNameLike(name).get(0);
+		return cityList.get(0);
 	}
 	public List<CityCode> findAll(){
 		return (List<CityCode>) cityDao.findAll();
@@ -113,8 +114,8 @@ public class CityService {
 					logger.error("城市代码解析出错，错误城市名称："+depCityName);
 				}
 			}else {
-				depCity = this.findByCityNameLike("%"+city.getDepCity()+"%");
-				logger.info("数据库查询"+depCityName);
+				depCity = this.findByCityNameLike("%"+depCityName+"%");
+				logger.info("数据库查询117:"+depCityName);
 				if(depCity!=null) {
 					String json = JSON.toJSONString(depCity, true); 
 					redisUtil.set(depCityName, json);
