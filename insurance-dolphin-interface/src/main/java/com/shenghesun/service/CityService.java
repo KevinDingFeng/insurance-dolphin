@@ -53,7 +53,7 @@ public class CityService {
 		if(arrCityCode!=null&&depCityCode!=null) {
 			//判断redis中是否存在depCityCode始发站三字代码
 			if(redisUtil.exists(depCityCode)){
-				String dep = (String) redisUtil.getObj(depCityCode);
+				String dep = (String) redisUtil.get(depCityCode);
 				depCity = JSON.parseObject(dep, CityCode.class);
 			}else {
 				depCity = this.findByCityCode(depCityCode);
@@ -64,7 +64,7 @@ public class CityService {
 			}
 			//判断redis中是否存在arrCity终点站三字代码
 			if(redisUtil.exists(arrCityCode)){
-				String arr = (String) redisUtil.getObj(arrCityCode);
+				String arr = (String) redisUtil.get(arrCityCode);
 				arrCity = JSON.parseObject(arr, CityCode.class);
 			}else {
 				arrCity = this.findByCityCode(arrCityCode);
@@ -99,9 +99,11 @@ public class CityService {
 			//手动输入城市获取国际还是国外
 			//判断redis中是否存在depCity
 			if(redisUtil.exists(depCityName)){
-				String dep = (String) redisUtil.getObj(depCityName);
+				String dep = (String) redisUtil.get(depCityName);
 				try {
 					depCity = JSON.parseObject(dep, CityCode.class);
+					logger.info("redis查询"+depCityName);
+					logger.info(dep);
 				} catch (Exception e) {
 					depCity = this.findByCityNameLike("%"+city.getDepCity()+"%");
 					if(depCity!=null) {
@@ -112,14 +114,16 @@ public class CityService {
 				}
 			}else {
 				depCity = this.findByCityNameLike("%"+city.getDepCity()+"%");
+				logger.info("数据库查询"+depCityName);
 				if(depCity!=null) {
 					String json = JSON.toJSONString(depCity, true); 
 					redisUtil.set(depCityName, json);
+					logger.info(json);
 				}	
 			}
 			//判断redis中是否存在arrCity
 			if(redisUtil.exists(arrCityName)){
-				String dep = (String) redisUtil.getObj(arrCityName);
+				String dep = (String) redisUtil.get(arrCityName);
 				try {
 					arrCity = JSON.parseObject(dep, CityCode.class);
 				} catch (Exception e) {
