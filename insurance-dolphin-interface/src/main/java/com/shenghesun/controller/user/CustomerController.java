@@ -20,12 +20,31 @@ class CustomerController {
 	@Autowired
 	private CityService cityService;
 
+	/**
+	 * 扫描登机牌，获取城市起止信息和价格信息
+	 * @param city
+	 * @return
+	 */
 	@GetMapping("getFlight")
 	@ResponseBody
-	public Object getFlightNo(City city){
+	public Object getCity(City city){
 		BaseResponse baseResponse = new BaseResponse();
 		Map<String, String> map = cityService.getFlightMessage(city);
 		baseResponse.setData(map);
 		return baseResponse;
 	}
+	/**
+	 * 手动输入城市，获取价格
+	 * @param city
+	 * @return
+	 */
+	@GetMapping("getPrice")
+	@ResponseBody
+	public Object getPrice(City city){
+		BaseResponse baseResponse = new BaseResponse();
+		Map<String, String> map = cityService.getCityMessage(city);
+		baseResponse.setData(map);
+		return baseResponse;
+	}
+	
 }

@@ -29,8 +29,10 @@ public class CityRedisService implements ApplicationRunner{
 		logger.info("redis缓存城市代码条数为========"+cityCode.size());
 		logger.info("redis缓存城市代码开始========");
 		for(int i=0;i<cityCode.size();i++) {
-			redisUtil.set(cityCode.get(i).getCityCode(), cityCode.get(i));
-			redisUtil.set(cityCode.get(i).getCityName(), cityCode.get(i));
+			CityCode cc = cityCode.get(i);
+			String key = "cityCode:id:"+cc.getId()+":cityCode:" + cc.getCityCode() + ":cityName:" + cc.getCityName();
+			redisUtil.set(cc.getCityCode(), cc);
+			redisUtil.set(key, cc);
 		}
 		logger.info("redis缓存城市代码结束========");
 	}

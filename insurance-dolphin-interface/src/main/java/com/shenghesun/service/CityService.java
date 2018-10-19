@@ -1,8 +1,10 @@
 package com.shenghesun.service;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import com.alibaba.fastjson.JSON;
+import com.shenghesun.common.BaseResponse;
 import com.shenghesun.dao.CityDao;
 import com.shenghesun.entity.City;
 import com.shenghesun.entity.CityCode;
@@ -35,133 +38,103 @@ public class CityService {
 		if (CollectionUtils.isEmpty(cityList)) {
 			return null;
 		}
-		// CityCode cityCode = cityDao.findByCityNameLike(name).get(0);
 		return cityList.get(0);
 	}
 	public List<CityCode> findAll(){
 		return (List<CityCode>) cityDao.findAll();
 	}
-	
+	//扫描登机牌二维码获取城市信息
 	public Map<String, String> getFlightMessage(City city){
-		Map<String, String> map = new HashMap<>();	
 		String depCityCode = city.getDepCityCode();
 		String arrCityCode = city.getArrCityCode();
+		CityCode depCity = null;
+		CityCode arrCity = null;
+		if(arrCityCode!=null&&depCityCode!=null) {
+			//查询redis中depCityCode始发站三字代码
+			if(redisUtil.exists(depCityCode)){
+				depCity = getCity(depCityCode);
+			}
+			//查询redis中arrCityCode终点站三字代码
+			if(redisUtil.exists(arrCityCode)){
+				arrCity = getCity(arrCityCode);
+			}
+		}
+		Map<String, String> map = setReturnMap(depCity,arrCity);
+		return map;
+	}
+	
+	
+	//手动输入城市获取城市信息
+	public Map<String, String> getCityMessage(City city) {
 		String depCityName = city.getDepCity();
 		String arrCityName = city.getArrCity();
 		CityCode depCity = null;
 		CityCode arrCity = null;
-		//扫描登机牌二维码获取城市信息
-		if(arrCityCode!=null&&depCityCode!=null) {
-			//判断redis中是否存在depCityCode始发站三字代码
-			if(redisUtil.exists(depCityCode)){
-				String dep = (String) redisUtil.get(depCityCode);
-				depCity = JSON.parseObject(dep, CityCode.class);
-			}else {
-				depCity = this.findByCityCode(depCityCode);
-				if(depCity!=null) {
-					String json = JSON.toJSONString(depCity, true);
-					redisUtil.set(depCityCode, json);
-				}	
+		//手动输入城市获取国际还是国外
+		//从redis查询depCity
+		Set<Object> depkeys = redisUtil.keys("cityCode:*cityName:*"+depCityName+"*");
+		depCity = returnCity(depkeys);
+		//从redis查询arrCity
+		Set<Object> arrkeys = redisUtil.keys("cityCode:*cityName:*"+arrCityName+"*");
+		arrCity = returnCity(arrkeys);
+		Map<String, String> map = setReturnMap(depCity,arrCity);
+		return map;
+	}
+	//根据Set集合返回城市信息
+	public CityCode returnCity(Set<Object> keys) {
+		Iterator<Object> it = keys.iterator();  
+		String c = null;
+		CityCode city = null;
+		while (it.hasNext()) {  
+			c = (String)it.next();
+		}  
+		if(c!=null) {
+			city = getCity(c);
+		}
+		return city;
+	}
+	//根据城市名称或者三字代码返回城市信息
+	public CityCode getCity(String key) {
+		String cityMessage = (String) redisUtil.get(key);
+		CityCode cc = null;
+		try {
+			cc = JSON.parseObject(cityMessage, CityCode.class);
+		} catch (Exception e) {
+			cc = findByCityNameLike("%"+key+"%");
+			if(cc!=null) {
+				setToRedis(cc,key);
 			}
-			//判断redis中是否存在arrCity终点站三字代码
-			if(redisUtil.exists(arrCityCode)){
-				String arr = (String) redisUtil.get(arrCityCode);
-				arrCity = JSON.parseObject(arr, CityCode.class);
+		}
+		return cc;
+	}
+
+	//将数据存放redis
+	public void setToRedis(CityCode city,String key) {
+		if(city!=null) {
+			String json = JSON.toJSONString(city, true); 
+			redisUtil.set(key, json,BaseResponse.redis_ex);
+		}	
+	}
+	
+	//返回map存放数据
+	public Map<String, String> setReturnMap(CityCode depCity,CityCode arrCity){
+		Map<String, String> map = new HashMap<>();	
+		if(depCity!=null && arrCity!=null) {
+			map.put("depCity", depCity.getCityName());
+			map.put("arrCity", arrCity.getCityName());
+			if(depCity.getCityType().equals("2")||arrCity.getCityType().equals("2")) {
+				map.put("classtype", BaseResponse.foreign_type);
+				map.put("total_fee", BaseResponse.foreign_price);
 			}else {
-				arrCity = this.findByCityCode(arrCityCode);
-				if(arrCity!=null) {
-					String json = JSON.toJSONString(arrCity, true); 
-					redisUtil.set(arrCityCode, json);
-				}
+				map.put("classtype", BaseResponse.inner_type);
+				map.put("total_fee", BaseResponse.inner_price);
 			}
-			if(depCity!=null && arrCity!=null) {
-				map.put("depCity", depCity.getCityName());
-				map.put("arrCity", arrCity.getCityName());
-				if(depCity.getCityType().equals("2")||arrCity.getCityType().equals("2")) {
-					System.out.println("国际航班");
-					map.put("total_fee", "28");
-					map.put("classtype", "2");
-				}else {
-					System.out.println("国内航班");
-					map.put("total_fee", "15");
-					map.put("classtype", "1");
-				}
+		}else {
+			if(depCity==null) {
+				map.put("total_fee", BaseResponse.error_price);
 			}else {
-				if(depCity==null) {
-					map.put("total_fee", "00");
-					logger.info("航班三字代码不存在："+depCityCode);
-				}else {
-					map.put("total_fee", "01");
-					logger.info("航班三字代码不存在："+arrCityCode);
-				}
+				map.put("total_fee",  BaseResponse.error_price1);
 			}
-		
-		}else{
-			//手动输入城市获取国际还是国外
-			//判断redis中是否存在depCity
-			if(redisUtil.exists(depCityName)){
-				String dep = (String) redisUtil.get(depCityName);
-				try {
-					depCity = JSON.parseObject(dep, CityCode.class);
-					logger.info("redis查询"+depCityName);
-					logger.info(dep);
-				} catch (Exception e) {
-					depCity = this.findByCityNameLike("%"+city.getDepCity()+"%");
-					if(depCity!=null) {
-						String json = JSON.toJSONString(depCity, true); 
-						redisUtil.set(depCityName, json);
-					}	
-					logger.error("城市代码解析出错，错误城市名称："+depCityName);
-				}
-			}else {
-				depCity = this.findByCityNameLike("%"+depCityName+"%");
-				logger.info("数据库查询117:"+depCityName);
-				if(depCity!=null) {
-					String json = JSON.toJSONString(depCity, true); 
-					redisUtil.set(depCityName, json);
-					logger.info(json);
-				}	
-			}
-			//判断redis中是否存在arrCity
-			if(redisUtil.exists(arrCityName)){
-				String dep = (String) redisUtil.get(arrCityName);
-				try {
-					arrCity = JSON.parseObject(dep, CityCode.class);
-				} catch (Exception e) {
-					arrCity = this.findByCityNameLike("%"+city.getArrCity()+"%");
-					if(arrCity!=null) {
-						String json = JSON.toJSONString(arrCity, true); 
-						redisUtil.set(arrCityName, json);
-					}	
-					logger.error("城市代码解析出错，错误城市名称："+arrCityName);
-				}
-			}else {
-				arrCity = this.findByCityNameLike("%"+city.getArrCity()+"%");
-				if(arrCity!=null) {
-					String json = JSON.toJSONString(arrCity, true); 
-					redisUtil.set(arrCityName, json);
-				}	
-			}
-			if(depCity!=null && arrCity!=null) {
-				if(depCity.getCityType().equals("2")||arrCity.getCityType().equals("2")) {
-					System.out.println("国际航班");
-					map.put("classtype", "2");
-					map.put("total_fee", "28");
-				}else {
-					System.out.println("国内航班");
-					map.put("classtype", "1");
-					map.put("total_fee", "15");
-				}
-			}else {
-				if(depCity==null) {
-					map.put("total_fee", "00");
-					logger.info("用户输入城市不存在,城市名称为："+depCityName);
-				}else {
-					map.put("total_fee", "01");
-					logger.info("用户输入城市不存在,城市名称为："+arrCityName);
-				}
-			}
-			
 		}
 		return map;
 	}
