@@ -5,6 +5,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
@@ -15,6 +17,8 @@ import org.springframework.stereotype.Component;
 @Component
 public class RedisUtil {
 
+	private final Logger logger = LoggerFactory.getLogger(this.getClass());
+	
 	@SuppressWarnings("rawtypes")
 	@Autowired
 	private RedisTemplate redisTemplate;
@@ -161,5 +165,16 @@ public class RedisUtil {
 			e.printStackTrace();
 		}
 		return result;
+	}
+	
+	public Set<Object> keys(String pattern) {
+		Set<Object>  resultSet = null;
+		try {
+			resultSet = redisTemplate.keys(pattern);
+		}catch (Exception e) {
+			logger.error(e.getMessage());
+			return null;
+		}
+		return resultSet;
 	}
 }
