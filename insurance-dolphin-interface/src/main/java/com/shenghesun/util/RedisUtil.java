@@ -167,6 +167,15 @@ public class RedisUtil {
 		return result;
 	}
 	
+	/**
+	 * 查找所有符合给定模式( pattern)的 key 。
+	 * @Title: keys 
+	 * @Description: TODO 
+	 * @param pattern
+	 * @return  Set<Object> 
+	 * @author yangzp
+	 * @date 2018年10月19日上午11:28:02
+	 **/ 
 	public Set<Object> keys(String pattern) {
 		Set<Object>  resultSet = null;
 		try {
