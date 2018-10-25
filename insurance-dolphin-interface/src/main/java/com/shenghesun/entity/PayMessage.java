@@ -271,4 +271,9 @@ public class PayMessage extends BaseEntity implements Serializable{
 	@Transient
 	@XStreamOmitField
 	private String markString;
+	
+	//证件类型  0代表身份证      1代表护照
+	@Column
+	@XStreamOmitField
+	private String cardType;
 }
