@@ -125,9 +125,11 @@ public class CityService {
 			if(depCity.getCityType().equals("2")||arrCity.getCityType().equals("2")) {
 				map.put("classtype", BaseResponse.foreign_type);
 				map.put("total_fee", BaseResponse.foreign_price);
+				map.put("del_price", BaseResponse.preForeign_price);
 			}else {
 				map.put("classtype", BaseResponse.inner_type);
 				map.put("total_fee", BaseResponse.inner_price);
+				map.put("del_price", BaseResponse.preInner_price);
 			}
 		}else {
 			if(depCity==null) {
