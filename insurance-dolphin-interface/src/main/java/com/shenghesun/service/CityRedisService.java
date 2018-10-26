@@ -28,8 +28,7 @@ public class CityRedisService implements ApplicationRunner{
 	public void run(ApplicationArguments args) throws Exception {
 		List<CityCode> cityCodes = cityService.findAll();
 		if(!CollectionUtils.isEmpty(cityCodes)) {
-			logger.info("redis缓存城市代码条数为:"+cityCodes.size());
-			logger.info("redis缓存城市代码开始===");
+			logger.info("redis缓存城市代码开始===条数为:"+cityCodes.size());
 			long start = System.currentTimeMillis();
 			for(int i=0;i<cityCodes.size();i++) {
 				CityCode cc = cityCodes.get(i);
@@ -38,7 +37,7 @@ public class CityRedisService implements ApplicationRunner{
 				redisUtil.set(key, cc);
 			}
 			long end = System.currentTimeMillis(); 
-			logger.info("redis缓存城市代码结束===运行时间："+(end - start)+"毫秒");
+			logger.info("redis缓存城市代码结束===运行时间:"+(end - start)+"毫秒");
 		}
 	}
 
