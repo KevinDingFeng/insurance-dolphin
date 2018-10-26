@@ -26,15 +26,17 @@ public class CityRedisService implements ApplicationRunner{
 	@Override
 	public void run(ApplicationArguments args) throws Exception {
 		List<CityCode> cityCode = cityService.findAll();
-		logger.info("redis缓存城市代码条数为========"+cityCode.size());
-		logger.info("redis缓存城市代码开始========");
+		logger.info("redis缓存城市代码条数为:"+cityCode.size());
+		logger.info("redis缓存城市代码开始===");
+		long start = System.currentTimeMillis();
 		for(int i=0;i<cityCode.size();i++) {
 			CityCode cc = cityCode.get(i);
 			String key = "cityCode:id:"+cc.getId()+":cityCode:" + cc.getCityCode() + ":cityName:" + cc.getCityName();
 			redisUtil.set(cc.getCityCode(), cc);
 			redisUtil.set(key, cc);
 		}
-		logger.info("redis缓存城市代码结束========");
+		long end = System.currentTimeMillis(); 
+		logger.info("redis缓存城市代码结束===运行时间："+(end - start)+"毫秒");
 	}
 
 }
