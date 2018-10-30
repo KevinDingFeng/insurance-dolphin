@@ -12,11 +12,15 @@ import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.shenghesun.entity.PayMessage;
+import com.shenghesun.service.PayService;
 import com.shenghesun.service.cpic.AsyncService;
 import com.shenghesun.util.SmsCodeService;
 
@@ -24,11 +28,16 @@ import com.shenghesun.util.SmsCodeService;
 @RequestMapping(value = "/wxpay")
 public class WxpayNotifyController {
 	
-//	@Autowired
-//	private PayService payService;
+	private final Logger logger = LoggerFactory.getLogger(this.getClass());
+	
+	@Autowired
+	private PayService payService;
 	
 	@Autowired
 	private AsyncService asyncService;
+	
+	@Autowired
+	private SmsCodeService smsCodeService;
 	
 	
 	public Element getRootElement(HttpServletRequest request)
@@ -41,7 +50,6 @@ public class WxpayNotifyController {
 			sb.append(line);
 		}
 		String xmlStr = sb.toString();
-		//System.out.println("xmlstr.............."+xmlStr);
 		Document document = DocumentHelper.parseText(xmlStr);
 		Element root = document.getRootElement();
 		return root;
@@ -58,48 +66,25 @@ public class WxpayNotifyController {
 		if(e != null) {
 			returnMsg = e.getText();
 		}
-		//System.out.println("root....."+root);
+		String smsStatus = null;
 		if ("SUCCESS".equals(returnCode)) {//支付成功
 			//商户系统内部订单号，要求32个字符内，只能是数字、大小写字母_-|*@ ，
 			//且在同一个商户号下唯一。
 			String orderNo = root.element("out_trade_no").getText();
+			PayMessage payMessage = payService.findByOrderNo(orderNo);
 			//执行异步接口
-			asyncService.executeAsync(orderNo);
+			asyncService.executeAsync(payMessage);
 			
-//			System.out.println("if...........");
-//			System.out.println("支付通知成功，" + returnMsg);
+			//发送成功短信
+		    smsStatus = smsCodeService.sendSmsCode(payMessage.getInsuranttel(), payMessage.getOrderNo());
+		    logger.info("订单号为:"+payMessage.getOrderNo()+";手机号为："+payMessage.getInsuranttel()+"的订单成功短信通知" + smsStatus);
 		} else {
-//			System.out.println("else..............");
-//			System.out.println("支付通知失败，" + returnMsg);
+			//发送支付失败短信
 		}
 		Document document = DocumentHelper.createDocument();
 		Element xmlE = document.addElement("xml");
 		xmlE.addElement("return_code").setText(returnCode);
 		xmlE.addElement("return_msg").setText(returnMsg);
-		System.out.println("支付通知接收信息结束，返回 xml : " + document.asXML());
 		return document.asXML();
-	}
-	
-	
-	@RequestMapping("/test")
-	public String testIndex() {
-		System.out.println("访问成功");
-		
-		String orderNo = "1539343329073g0";
-		asyncService.executeAsync(orderNo);
-		
-		return "成功！";
-	}
-	
-	
-	@Autowired
-	private SmsCodeService smsCodeService;
-	
-	@RequestMapping("/sendSmsCode")
-	public String sendSmsCode() {
-		
-		smsCodeService.sendSmsCode("18610927194", "1539323514746z4");
-		
-		return "发送短信成功！";
 	}
 }
