@@ -17,7 +17,6 @@ import com.shenghesun.model.webservice.Datas;
 import com.shenghesun.model.webservice.Freightcpic;
 import com.shenghesun.model.webservice.Header;
 import com.shenghesun.service.PayService;
-import com.shenghesun.util.SmsCodeService;
 import com.shenghesun.util.StringGenerateUtils;
 import com.shenghesun.util.XStreamUtil;
 
@@ -38,14 +37,14 @@ public class AsyncService {
 	@Autowired
 	private WebServiceClient webServiceClient;
 	
-	@Autowired
-	private SmsCodeService smsCodeService;
+//	@Autowired
+//	private SmsCodeService smsCodeService;
 	
 	@Async("asyncServiceExecutor")
-    public void executeAsync(String orderNo) {
+    public void executeAsync(PayMessage payMessage) {
         //logger.info("start executeAsync");
         try{
-        	PayMessage payMessage = payService.findByOrderNo(orderNo);
+//        	PayMessage payMessage = payService.findByOrderNo(orderNo);
     		
     		//修改保单状态
     		payMessage.setPayStatus(1);
@@ -73,24 +72,25 @@ public class AsyncService {
             				}
             			}
     				}
-    				String smsStatus;
+//    				String smsStatus;
     				if(flag) {//保单生效
     					//发送成功短信
-					    smsStatus = smsCodeService.sendSmsCode(payMessage.getInsuranttel(), payMessage.getOrderNo());
-						if("success".equals(smsStatus)) {
-							logger.info("订单号为:"+payMessage.getOrderNo()+"的订单短信通知成功");
-						}else {
-							logger.info("订单号为:"+payMessage.getOrderNo()+"的订单短信通知失败");
-						}
+//					    smsStatus = smsCodeService.sendSmsCode(payMessage.getInsuranttel(), payMessage.getOrderNo());
+//						if("success".equals(smsStatus)) {
+//							logger.info("订单号为:"+payMessage.getOrderNo()+"的订单短信通知成功");
+//						}else {
+//							logger.info("订单号为:"+payMessage.getOrderNo()+"的订单短信通知失败");
+//						}
+    					logger.info("订单号为:"+payMessage.getOrderNo()+"的订单投保成功");
     				}else {
 						//发送失败短信
-						smsStatus = smsCodeService.sendSmsCode(payMessage.getInsuranttel(), "飞行行李险下单失败！");
-						if("success".equals(smsStatus)) {
-							logger.info("订单号为:"+payMessage.getOrderNo()+"的订单失败短信通知成功");
-						}else {
-							logger.info("订单号为:"+payMessage.getOrderNo()+"的订单短信通知失败");
-						}
-
+//						smsStatus = smsCodeService.sendSmsCode(payMessage.getInsuranttel(), "飞行行李险下单失败！");
+//						if("success".equals(smsStatus)) {
+//							logger.info("订单号为:"+payMessage.getOrderNo()+"的订单失败短信通知成功");
+//						}else {
+//							logger.info("订单号为:"+payMessage.getOrderNo()+"的订单短信通知失败");
+//						}
+    					logger.info("订单号为:"+payMessage.getOrderNo()+"的订单投保失败");
     				}
     			}
     			

@@ -67,7 +67,7 @@ public class PayMessage extends BaseEntity implements Serializable{
 	@Column(length=50)
 	private String insurancecardcode;
 	
-	@XStreamOmitField
+	//@XStreamOmitField
 	@XStreamAlias("INSURANTTEL")
 	@Column
 	private String insuranttel;
