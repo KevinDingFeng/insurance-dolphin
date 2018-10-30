@@ -98,7 +98,7 @@ public class SmsCodeService {
 			if(sendSmsResponse != null && "OK".equals(sendSmsResponse.getCode())){
 				return "success";
 			}
-			log.info(sendSmsResponse.getCode());
+			log.info(sendSmsResponse.toString());
 			return "failed";
 		} catch (ClientException e) {
 			log.error("Exception {} in {} ", e.getMessage(), "sendSmsCode:"+number);
