@@ -15,6 +15,7 @@ import org.dom4j.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -38,6 +39,12 @@ public class WxpayNotifyController {
 	
 	@Autowired
 	private SmsCodeService smsCodeService;
+	
+	/**
+	 * 支付成功通知模板code
+	 */
+	@Value("${sms.success.template.code}")
+	private String templateCode;
 	
 	
 	public Element getRootElement(HttpServletRequest request)
@@ -76,10 +83,11 @@ public class WxpayNotifyController {
 			asyncService.executeAsync(payMessage);
 			
 			//发送成功短信
-		    smsStatus = smsCodeService.sendSmsCode(payMessage.getInsuranttel(), payMessage.getOrderNo());
+		    smsStatus = smsCodeService.sendSms(payMessage.getInsuranttel(), "伟林易航",templateCode,"");
 		    logger.info("订单号为:"+payMessage.getOrderNo()+";手机号为："+payMessage.getInsuranttel()+"的订单成功短信通知" + smsStatus);
 		} else {
 			//发送支付失败短信
+			logger.info("订单支付失败");
 		}
 		Document document = DocumentHelper.createDocument();
 		Element xmlE = document.addElement("xml");
@@ -87,4 +95,5 @@ public class WxpayNotifyController {
 		xmlE.addElement("return_msg").setText(returnMsg);
 		return document.asXML();
 	}
+	
 }
