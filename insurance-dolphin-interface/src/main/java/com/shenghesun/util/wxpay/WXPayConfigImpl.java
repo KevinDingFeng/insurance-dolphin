@@ -5,21 +5,40 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
 
+@Service
 public class WXPayConfigImpl extends WXPayConfig {
 
+	/**
+	 *  App ID
+	 */
+	@Value("${wechat.miniapp.appid}")
+	private String appid;
+	
+	/**
+	 * Mch ID
+	 */
+	@Value("${wechat.pay.mchid}")
+	private String mchid;
+	
+	/**
+	 * API 密钥
+	 */
+	@Value("${wechat.pay.key}")
+	private String key;
 	
 	public String getAppID() {
-		return "wx3867d9affccad48a";
+		return appid;
 	}
 
 	public String getMchID() {
-		return "1513993701";
+		return mchid;
 	}
 
 	public String getKey() {
-//		return "301ef90ab54423a3c9a9b42d7246e096";//TODO 这个是错的，应该用支付的 key
-		return "Shenghesun20180917shenghesun2018";
+		return key;
 	}
 	
 	public InputStream getCertStream() {

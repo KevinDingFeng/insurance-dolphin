@@ -20,7 +20,6 @@ import com.shenghesun.service.PayService;
 import com.shenghesun.util.RandomUtil;
 import com.shenghesun.util.wxpay.WXPay;
 import com.shenghesun.util.wxpay.WXPayConfig;
-import com.shenghesun.util.wxpay.WXPayConfigImpl;
 import com.shenghesun.util.wxpay.WXPayUtil;
 
 @RestController
@@ -31,6 +30,9 @@ public class OrderController {
 	
 	@Value("${weixin.notify.url}")
 	private String notifyUrl;
+	
+	@Autowired
+	private WXPayConfig conf;
 	
 	/**通过openId获取预支付id
 	 * * @Title: getPrePayId
@@ -55,10 +57,10 @@ public class OrderController {
         map.put("spbill_create_ip",request.getRemoteAddr());//请求Ip地址
         map.put("body", "飞行行李险-保险");//商品描述			body 商家名称-销售商品类目
         map.put("out_trade_no", orderNo);//商户订单号			out_trade_no
-       // map.put("total_fee", Integer.toString((payMessage.getOrderAmount()*100)));
+//        map.put("total_fee", Integer.toString((payMessage.getOrderAmount()*100)));
         map.put("total_fee", "1");//标价金额			total_fee
         map.put("trade_type", "JSAPI");//交易类型			trade_type
-        WXPayConfig conf = new WXPayConfigImpl();
+        //WXPayConfig conf = new WXPayConfigImpl();
         WXPay wxPay = new WXPay(conf, notifyUrl);
         Map<String,String> resultMap = wxPay.unifiedOrder(map);
 //        Iterator<Map.Entry<String, String>> it = map.entrySet().iterator();
