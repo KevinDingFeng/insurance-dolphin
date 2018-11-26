@@ -35,10 +35,6 @@ public class PayMessage extends BaseEntity implements Serializable{
 	@Column(length=100)
 	private String orderNo;
 	
-	@XStreamOmitField
-	@Column(length=1)
-	private String payState="0";
-	
 	@XStreamAlias("APPLYNAME")
 	@Column(length=200)
 	private String applyname;

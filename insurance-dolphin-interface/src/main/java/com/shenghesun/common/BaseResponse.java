@@ -20,7 +20,7 @@ public class BaseResponse implements Serializable {
 	public static final String foreign_type = "2";//国外类型
 	public static final String error_price = "00";//错误代码，用于前端区分
 	public static final String error_price1 = "01";//错误代码，用于前端区分
-	
+	public static final String pay_staus = "1";//支付状态，1代表成功
 	protected long serverDateTime = System.currentTimeMillis();
 	//接口是否调用成功
 	protected boolean success = true;

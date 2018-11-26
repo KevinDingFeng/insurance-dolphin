@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.shenghesun.common.BaseResponse;
 import com.shenghesun.dao.CityDao;
 import com.shenghesun.entity.City;
@@ -109,7 +110,7 @@ public class CityService {
 	//将数据存放redis
 	public void setToRedis(CityCode city,String key) {
 		if(city!=null) {
-			String json = JSON.toJSONString(city, true); 
+			String json = JSONObject.toJSONString(city);
 			redisUtil.set(key, json,BaseResponse.redis_ex);
 		}	
 	}
