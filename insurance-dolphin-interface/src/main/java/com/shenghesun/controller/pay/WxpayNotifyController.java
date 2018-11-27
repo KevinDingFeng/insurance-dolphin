@@ -24,7 +24,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.shenghesun.common.BaseResponse;
 import com.shenghesun.entity.PayMessage;
 import com.shenghesun.entity.WxPayResult;
-import com.shenghesun.model.webservice.ResultBean;
 import com.shenghesun.service.PayService;
 import com.shenghesun.service.WxPayResultService;
 import com.shenghesun.service.cpic.AsyncService;
@@ -115,6 +114,7 @@ public class WxpayNotifyController {
 			String orderNo = root.element("out_trade_no").getText();
 			PayMessage payMessage = payService.findByOrderNo(orderNo);
 			try {
+				logger.info(returnXml);
 				//将支付通知结果转换成map,进行签名验证
 				Map<String, String> reqData = WXPayUtil.xmlToMap(returnXml);
 				logger.info(reqData.toString());
@@ -154,53 +154,6 @@ public class WxpayNotifyController {
 			logger.info("订单支付失败");
 		}
 		return document.asXML();
-	}
-
-	/**
-	 * 微信支付平台返回xml数据转换为对象
-	 * @param xmlStr
-	 * @return
-	 * @throws DocumentException
-	 */
-	public WxPayResult xml2WxPay(Element root){
-		WxPayResult wxPay = new WxPayResult();
-		String appid = root.element("appid").getText();
-		wxPay.setAppid(appid);
-		String attach = root.element("attach").getText();
-		wxPay.setAttach(attach);
-		String bank_type = root.element("bank_type").getText();
-		wxPay.setBank_type(bank_type);
-		String fee_type = root.element("fee_type").getText();
-		wxPay.setFee_type(fee_type);
-		String is_subscribe = root.element("is_subscribe").getText();
-		wxPay.setIs_subscribe(is_subscribe);
-		String mch_id = root.element("mch_id").getText();
-		wxPay.setMch_id(mch_id);
-		String nonce_str = root.element("nonce_str").getText();
-		wxPay.setNonce_str(nonce_str);
-		String openid = root.element("openid").getText();
-		wxPay.setOpenid(openid);
-		String out_trade_no = root.element("out_trade_no").getText();
-		wxPay.setOut_trade_no(out_trade_no);
-		String result_code = root.element("result_code").getText();
-		wxPay.setResult_code(result_code);
-		String return_code = root.element("return_code").getText();
-		wxPay.setReturn_code(return_code);
-		String sign = root.element("sign").getText();
-		wxPay.setSign(sign);
-		String sub_mch_id = root.element("sub_mch_id").getText();
-		wxPay.setSub_mch_id(sub_mch_id);
-		String time_end = root.element("time_end").getText();
-		wxPay.setTime_end(time_end);
-		String total_fee = root.element("total_fee").getText();
-		wxPay.setTotal_fee(total_fee);
-		String cash_fee = root.element("cash_fee").getText();
-		wxPay.setCash_fee(cash_fee);
-		String trade_type = root.element("trade_type").getText();
-		wxPay.setTrade_type(trade_type);
-		String transaction_id = root.element("transaction_id").getText();
-		wxPay.setTransaction_id(transaction_id);
-		return wxPay;
 	}
 
 }
