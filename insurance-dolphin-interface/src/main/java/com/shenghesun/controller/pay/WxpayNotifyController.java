@@ -113,7 +113,7 @@ public class WxpayNotifyController {
 			//且在同一个商户号下唯一。
 			String orderNo = root.element("out_trade_no").getText();
 			PayMessage payMessage = payService.findByOrderNo(orderNo);
-			try {
+			try {  
 				logger.info(returnXml);
 				//将支付通知结果转换成map,进行签名验证
 				Map<String, String> reqData = WXPayUtil.xmlToMap(returnXml);
