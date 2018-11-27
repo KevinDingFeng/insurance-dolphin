@@ -58,7 +58,7 @@ public class OrderController {
         map.put("body", "飞行行李险-保险");//商品描述			body 商家名称-销售商品类目
         map.put("out_trade_no", orderNo);//商户订单号			out_trade_no
 //        map.put("total_fee", Integer.toString((payMessage.getOrderAmount()*100)));
-        map.put("total_fee", Integer.toString(payMessage.getOrderAmount()));//标价金额			total_fee
+        map.put("total_fee","1");//标价金额			total_fee
         map.put("trade_type", "JSAPI");//交易类型			trade_type
         //WXPayConfig conf = new WXPayConfigImpl();
         WXPay wxPay = new WXPay(conf, notifyUrl);

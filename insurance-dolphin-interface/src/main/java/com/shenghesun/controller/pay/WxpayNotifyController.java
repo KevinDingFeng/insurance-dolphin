@@ -3,6 +3,8 @@ package com.shenghesun.controller.pay;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Map;
 
 import javax.servlet.ServletInputStream;
@@ -75,15 +77,6 @@ public class WxpayNotifyController {
 	}
 	public Element getRootElement(String xmlStr)
 			throws IOException, DocumentException {
-		/*BufferedReader br = new BufferedReader(new InputStreamReader(
-				(ServletInputStream) request.getInputStream()));
-		String line = null;
-		StringBuilder sb = new StringBuilder();
-		while ((line = br.readLine()) != null) {
-			sb.append(line);
-		}
-		String xmlStr = sb.toString();*/
-//		String xmlStr = getXml(request);
 		Document document = DocumentHelper.parseText(xmlStr);
 		Element root = document.getRootElement();
 		return root;
@@ -93,7 +86,9 @@ public class WxpayNotifyController {
 	public String wxnotify(HttpServletRequest request,
 			HttpServletResponse response) throws Exception{
 		WXPay wxPay = new WXPay(conf, notifyUrl);
+		//获取请求的xml
 		String returnXml = this.getXml(request);
+		//将xml转换成Element
 		Element root = this.getRootElement(returnXml);
 		String returnCode = root.element("return_code").getText();
 		Element e = root.element("return_msg");
@@ -102,51 +97,38 @@ public class WxpayNotifyController {
 			returnMsg = e.getText();
 		}
 		//创建返回xml
-		Document document = DocumentHelper.createDocument();
-		Element xmlE = document.addElement("xml");
-		xmlE.addElement("return_code").setText(returnCode);
-		xmlE.addElement("return_msg").setText(returnMsg);
+		Document document = getReturnElement(returnCode,returnMsg);
 		String smsStatus = null;
-		
 		logger.info("returnXml:"+returnXml);
-		if ("SUCCESS".equals(returnCode)) {//支付成功
+		if ("SUCCESS".equals(returnCode)) {
+			//支付成功
 			//商户系统内部订单号，要求32个字符内，只能是数字、大小写字母_-|*@ ，
 			//且在同一个商户号下唯一。
 			String orderNo = root.element("out_trade_no").getText();
 			PayMessage payMessage = payService.findByOrderNo(orderNo);
 			try {
-				logger.info("-----------------------try-----------------------------");
 				//将支付通知结果转换成map,进行签名验证
 				Map<String, String> reqData = WXPayUtil.xmlToMap(returnXml);
-				logger.info(reqData.toString());
 				boolean resultSignValid = wxPay.isPayResultNotifySignatureValid(reqData);
 				if(!resultSignValid) {
-					logger.info("resultSignValid failed");
 					return null;
 				}
 				//微信支付平台返回信息xml转支付对象并进行保存
-				WxPayResult wxPayResult = XStreamUtil.xmlToBean(returnXml, WxPayResult.class);
-				WxPayService.save(wxPayResult);
+				WxPayResult wxPayResult = formatData(returnXml);
 				//如果验证通过并且订单支付金额与支付结果通知返回金额相同则进行投保
-				logger.info("orderAmount:"+payMessage.getOrderAmount()*100+"total_fee:"+wxPayResult.getTotal_fee());
-				//if(Integer.toString((payMessage.getOrderAmount()*100)).equals(wxPayResult.getTotal_fee())) {
-				if(Integer.toString((payMessage.getOrderAmount())).equals(wxPayResult.getTotal_fee())) {
-					logger.info("sign success");
+				if(Integer.toString((payMessage.getOrderAmount()*100)).equals(wxPayResult.getTotal_fee())) {
 					//如果订单状态为已经支付，则直接返回成功，不继续进行投保
 					if(payMessage.getPayStatus().equals(BaseResponse.pay_staus)) {
-						logger.info("pay_status already equals 1");
 						return document.asXML();
 					}else {
-						logger.info("approvl");
-						//执行异步接口
+						//执行异步投保接口
 						asyncService.executeAsync(payMessage);
 					}
 				}else {
-					logger.info("sign access but orderAccount not equals total_fee");;
 					return null;
 				}
 			} catch (Exception e1) {
-				e1.printStackTrace();
+				logger.error("Exception {} in {}", e1.getStackTrace(), Thread.currentThread().getName());
 			}
 			//发送成功短信
 			smsStatus = smsCodeService.sendSms(payMessage.getInsuranttel(), "伟林易航",templateCode,"");
@@ -157,52 +139,30 @@ public class WxpayNotifyController {
 		}
 		return document.asXML();
 	}
-
 	/**
-	 * 微信支付平台返回xml数据转换为对象
-	 * @param xmlStr
+	 * 创建返回成功xml的document
+	 * @param returnCode
+	 * @param returnMsg
 	 * @return
-	 * @throws DocumentException
 	 */
-	public WxPayResult xml2WxPay(Element root){
-		WxPayResult wxPay = new WxPayResult();
-		String appid = root.element("appid").getText();
-		wxPay.setAppid(appid);
-		String attach = root.element("attach").getText();
-		wxPay.setAttach(attach);
-		String bank_type = root.element("bank_type").getText();
-		wxPay.setBank_type(bank_type);
-		String fee_type = root.element("fee_type").getText();
-		wxPay.setFee_type(fee_type);
-		String is_subscribe = root.element("is_subscribe").getText();
-		wxPay.setIs_subscribe(is_subscribe);
-		String mch_id = root.element("mch_id").getText();
-		wxPay.setMch_id(mch_id);
-		String nonce_str = root.element("nonce_str").getText();
-		wxPay.setNonce_str(nonce_str);
-		String openid = root.element("openid").getText();
-		wxPay.setOpenid(openid);
-		String out_trade_no = root.element("out_trade_no").getText();
-		wxPay.setOut_trade_no(out_trade_no);
-		String result_code = root.element("result_code").getText();
-		wxPay.setResult_code(result_code);
-		String return_code = root.element("return_code").getText();
-		wxPay.setReturn_code(return_code);
-		String sign = root.element("sign").getText();
-		wxPay.setSign(sign);
-		String sub_mch_id = root.element("sub_mch_id").getText();
-		wxPay.setSub_mch_id(sub_mch_id);
-		String time_end = root.element("time_end").getText();
-		wxPay.setTime_end(time_end);
-		String total_fee = root.element("total_fee").getText();
-		wxPay.setTotal_fee(total_fee);
-		String cash_fee = root.element("cash_fee").getText();
-		wxPay.setCash_fee(cash_fee);
-		String trade_type = root.element("trade_type").getText();
-		wxPay.setTrade_type(trade_type);
-		String transaction_id = root.element("transaction_id").getText();
-		wxPay.setTransaction_id(transaction_id);
-		return wxPay;
+	public Document getReturnElement(String returnCode,String returnMsg) {
+		Document document = DocumentHelper.createDocument();
+		Element xmlE = document.addElement("xml");
+		xmlE.addElement("return_code").setText(returnCode);
+		xmlE.addElement("return_msg").setText(returnMsg);
+		return document;
 	}
-
+	/**
+	 * 格式化微信支付返回的时间和总金额数据，并进行数据库保存
+	 * @throws ParseException 
+	 */
+	public WxPayResult formatData(String returnXml) throws ParseException {
+		WxPayResult wxPayResult = XStreamUtil.xmlToBean(returnXml, WxPayResult.class);
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
+		SimpleDateFormat simple = new SimpleDateFormat("yyyy/MM/dd HH:mm");
+		wxPayResult.setTime_end(simple.format(sdf.parse(wxPayResult.getTime_end())));
+		wxPayResult.setTotal_fee(Double.toString((Double.parseDouble(wxPayResult.getTotal_fee())/100)));
+		WxPayService.save(wxPayResult);
+		return wxPayResult;
+	}
 }

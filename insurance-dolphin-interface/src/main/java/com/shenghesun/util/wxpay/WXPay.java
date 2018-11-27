@@ -5,8 +5,6 @@ import java.util.Map;
 
 import com.shenghesun.util.wxpay.WXPayConstants.SignType;
 
-
-
 public class WXPay {
 
     private WXPayConfig config;
