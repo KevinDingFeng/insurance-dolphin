@@ -24,10 +24,12 @@ import org.springframework.web.bind.annotation.RestController;
 import com.shenghesun.common.BaseResponse;
 import com.shenghesun.entity.PayMessage;
 import com.shenghesun.entity.WxPayResult;
+import com.shenghesun.model.webservice.ResultBean;
 import com.shenghesun.service.PayService;
 import com.shenghesun.service.WxPayResultService;
 import com.shenghesun.service.cpic.AsyncService;
 import com.shenghesun.util.SmsCodeService;
+import com.shenghesun.util.XStreamUtil;
 import com.shenghesun.util.wxpay.WXPay;
 import com.shenghesun.util.wxpay.WXPayConfig;
 import com.shenghesun.util.wxpay.WXPayUtil;
@@ -106,6 +108,7 @@ public class WxpayNotifyController {
 		xmlE.addElement("return_code").setText(returnCode);
 		xmlE.addElement("return_msg").setText(returnMsg);
 		String smsStatus = null;
+		String returnXml = this.getXml(request);
 		if ("SUCCESS".equals(returnCode)) {//支付成功
 			//商户系统内部订单号，要求32个字符内，只能是数字、大小写字母_-|*@ ，
 			//且在同一个商户号下唯一。
@@ -113,14 +116,15 @@ public class WxpayNotifyController {
 			PayMessage payMessage = payService.findByOrderNo(orderNo);
 			try {
 				//将支付通知结果转换成map,进行签名验证
-				Map<String, String> reqData = WXPayUtil.xmlToMap(this.getXml(request));
+				Map<String, String> reqData = WXPayUtil.xmlToMap(returnXml);
+				logger.info(reqData.toString());
 				boolean resultSignValid = wxPay.isPayResultNotifySignatureValid(reqData);
 				if(!resultSignValid) {
 					logger.info("resultSignValid failed");
 					return null;
 				}
 				//微信支付平台返回信息xml转支付对象并进行保存
-				WxPayResult wxPayResult = xml2WxPay(root);
+				WxPayResult wxPayResult = XStreamUtil.xmlToBean(returnXml, WxPayResult.class);
 				WxPayService.save(wxPayResult);
 				//如果验证通过并且订单支付金额与支付结果通知返回金额相同则进行投保
 				logger.info("orderAmount:"+payMessage.getOrderAmount()*100+"total_fee:"+wxPayResult.getTotal_fee());
