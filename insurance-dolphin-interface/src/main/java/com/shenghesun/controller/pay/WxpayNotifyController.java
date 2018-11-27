@@ -99,7 +99,7 @@ public class WxpayNotifyController {
 		//创建返回xml
 		Document document = getReturnElement(returnCode,returnMsg);
 		String smsStatus = null;
-		logger.info("returnXml:"+returnXml);
+		//logger.info("returnXml:"+returnXml);
 		if ("SUCCESS".equals(returnCode)) {
 			//支付成功
 			//商户系统内部订单号，要求32个字符内，只能是数字、大小写字母_-|*@ ，
