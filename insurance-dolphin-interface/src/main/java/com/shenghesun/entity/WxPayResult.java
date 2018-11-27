@@ -15,7 +15,7 @@ import lombok.EqualsAndHashCode;
 @Table
 @Data
 @EqualsAndHashCode(callSuper = true)
-@XStreamAlias("RESULT")
+@XStreamAlias("xml")
 public class WxPayResult extends BaseEntity implements Serializable {
 
 	private static final long serialVersionUID = 6208536091356660512L;
