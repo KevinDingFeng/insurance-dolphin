@@ -124,6 +124,9 @@ public class WxpayNotifyController {
 						save(returnXml);
 						//执行异步投保接口
 						asyncService.executeAsync(payMessage);
+						//发送成功短信
+						smsStatus = smsCodeService.sendSms(payMessage.getInsuranttel(), "伟林易航",templateCode,"");
+						logger.info("订单号为:"+payMessage.getOrderNo()+";手机号为："+payMessage.getInsuranttel()+"的订单成功短信通知" + smsStatus);
 					}
 				}else {
 					return null;
@@ -131,9 +134,7 @@ public class WxpayNotifyController {
 			} catch (Exception e1) {
 				logger.error("Exception {} in {}", e1.getStackTrace(), Thread.currentThread().getName());
 			}
-			//发送成功短信
-			smsStatus = smsCodeService.sendSms(payMessage.getInsuranttel(), "伟林易航",templateCode,"");
-			logger.info("订单号为:"+payMessage.getOrderNo()+";手机号为："+payMessage.getInsuranttel()+"的订单成功短信通知" + smsStatus);
+			
 		} else {
 			//发送支付失败短信
 			logger.info("订单支付失败");
