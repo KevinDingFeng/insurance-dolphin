@@ -113,14 +113,15 @@ public class WxpayNotifyController {
 				if(!resultSignValid) {
 					return null;
 				}
-				//微信支付平台返回信息xml转支付对象并进行保存
-				WxPayResult wxPayResult = formatData(returnXml);
+				String total_fee = root.element("total_fee").getText();
 				//如果验证通过并且订单支付金额与支付结果通知返回金额相同则进行投保
-				if(Integer.toString((payMessage.getOrderAmount()*100)).equals(wxPayResult.getTotal_fee())) {
+				if(Integer.toString((payMessage.getOrderAmount()*100)).equals(total_fee)) {
 					//如果订单状态为已经支付，则直接返回成功，不继续进行投保
 					if(payMessage.getPayStatus().equals(BaseResponse.pay_staus)) {
 						return document.asXML();
 					}else {
+						//微信支付平台返回信息xml转支付对象并进行保存
+						save(returnXml);
 						//执行异步投保接口
 						asyncService.executeAsync(payMessage);
 					}
@@ -156,13 +157,12 @@ public class WxpayNotifyController {
 	 * 格式化微信支付返回的时间和总金额数据，并进行数据库保存
 	 * @throws ParseException 
 	 */
-	public WxPayResult formatData(String returnXml) throws ParseException {
+	public void save(String returnXml) throws ParseException {
 		WxPayResult wxPayResult = XStreamUtil.xmlToBean(returnXml, WxPayResult.class);
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
 		SimpleDateFormat simple = new SimpleDateFormat("yyyy/MM/dd HH:mm");
 		wxPayResult.setTime_end(simple.format(sdf.parse(wxPayResult.getTime_end())));
 		wxPayResult.setTotal_fee(Double.toString((Double.parseDouble(wxPayResult.getTotal_fee())/100)));
 		WxPayService.save(wxPayResult);
-		return wxPayResult;
 	}
 }
