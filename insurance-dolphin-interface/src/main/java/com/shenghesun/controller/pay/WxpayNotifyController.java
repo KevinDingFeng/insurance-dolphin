@@ -100,9 +100,6 @@ public class WxpayNotifyController {
 		if(e != null) {
 			returnMsg = e.getText();
 		}
-		//微信支付平台返回信息xml转支付对象并进行保存
-		WxPayResult wxPayResult = xml2WxPay(root);
-		WxPayService.save(wxPayResult);
 		//创建返回xml
 		Document document = DocumentHelper.createDocument();
 		Element xmlE = document.addElement("xml");
@@ -118,17 +115,29 @@ public class WxpayNotifyController {
 				//将支付通知结果转换成map,进行签名验证
 				Map<String, String> reqData = WXPayUtil.xmlToMap(this.getXml(request));
 				boolean resultSignValid = wxPay.isPayResultNotifySignatureValid(reqData);
+				if(!resultSignValid) {
+					logger.info("resultSignValid failed");
+					return null;
+				}
+				//微信支付平台返回信息xml转支付对象并进行保存
+				WxPayResult wxPayResult = xml2WxPay(root);
+				WxPayService.save(wxPayResult);
 				//如果验证通过并且订单支付金额与支付结果通知返回金额相同则进行投保
-				logger.info("orderAmount:"+payMessage.getOrderAmount()*100+"total_fee:"+wxPayResult.getTotal_fee()+resultSignValid);
-				if(Integer.toString((payMessage.getOrderAmount()*100)).equals(wxPayResult.getTotal_fee())&&resultSignValid) {
-					logger.info("验证成功");
+				logger.info("orderAmount:"+payMessage.getOrderAmount()*100+"total_fee:"+wxPayResult.getTotal_fee());
+				if(Integer.toString((payMessage.getOrderAmount()*100)).equals(wxPayResult.getTotal_fee())) {
+					logger.info("sign success");
 					//如果订单状态为已经支付，则直接返回成功，不继续进行投保
 					if(payMessage.getPayStatus().equals(BaseResponse.pay_staus)) {
+						logger.info("pay_status already equals 1");
 						return document.asXML();
 					}else {
+						logger.info("approvl");
 						//执行异步接口
 						asyncService.executeAsync(payMessage);
 					}
+				}else {
+					logger.info("sign access but orderAccount not equals total_fee");;
+					return null;
 				}
 			} catch (Exception e1) {
 				e1.printStackTrace();
