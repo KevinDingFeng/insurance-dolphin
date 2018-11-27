@@ -61,6 +61,7 @@ public class WXPayUtil {
                 stream.close();
             } catch (Exception ex) {
                 // do nothing
+            	ex.printStackTrace();
             }
             return data;
         } catch (Exception ex) {

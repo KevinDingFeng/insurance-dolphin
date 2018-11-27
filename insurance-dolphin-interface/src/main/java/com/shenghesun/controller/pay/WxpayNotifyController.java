@@ -74,7 +74,7 @@ public class WxpayNotifyController {
 		String xmlStr = sb.toString();
 		return xmlStr;
 	}
-	public Element getRootElement(HttpServletRequest request)
+	public Element getRootElement(String xmlStr)
 			throws IOException, DocumentException {
 		/*BufferedReader br = new BufferedReader(new InputStreamReader(
 				(ServletInputStream) request.getInputStream()));
@@ -84,7 +84,7 @@ public class WxpayNotifyController {
 			sb.append(line);
 		}
 		String xmlStr = sb.toString();*/
-		String xmlStr = getXml(request);
+//		String xmlStr = getXml(request);
 		Document document = DocumentHelper.parseText(xmlStr);
 		Element root = document.getRootElement();
 		return root;
@@ -94,8 +94,8 @@ public class WxpayNotifyController {
 	public String wxnotify(HttpServletRequest request,
 			HttpServletResponse response) throws Exception{
 		WXPay wxPay = new WXPay(conf, notifyUrl);
-
-		Element root = this.getRootElement(request);
+		String returnXml = this.getXml(request);
+		Element root = this.getRootElement(returnXml);
 		String returnCode = root.element("return_code").getText();
 		Element e = root.element("return_msg");
 		String returnMsg = "success";//TODO
@@ -108,13 +108,15 @@ public class WxpayNotifyController {
 		xmlE.addElement("return_code").setText(returnCode);
 		xmlE.addElement("return_msg").setText(returnMsg);
 		String smsStatus = null;
-		String returnXml = this.getXml(request);
+		
+		logger.info("returnXml:"+returnXml);
 		if ("SUCCESS".equals(returnCode)) {//支付成功
 			//商户系统内部订单号，要求32个字符内，只能是数字、大小写字母_-|*@ ，
 			//且在同一个商户号下唯一。
 			String orderNo = root.element("out_trade_no").getText();
 			PayMessage payMessage = payService.findByOrderNo(orderNo);
 			try {
+				logger.info("-----------------------try-----------------------------");
 				//将支付通知结果转换成map,进行签名验证
 				Map<String, String> reqData = WXPayUtil.xmlToMap(returnXml);
 				logger.info(reqData.toString());
