@@ -28,6 +28,7 @@ public class PayService {
 		return payDao.findByOrderNo(orderNo);
 	}
 	public PayMessage completePayMessage(PayMessage payMessage) {
+		payMessage.setOrderAmount(1);
 		String mark = payMessage.getMarkString();
 		JsonParser jp = new JsonParser();  
 		JsonArray jo = jp.parse(mark).getAsJsonArray();
