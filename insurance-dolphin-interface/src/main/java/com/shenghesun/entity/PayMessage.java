@@ -101,7 +101,7 @@ public class PayMessage extends BaseEntity implements Serializable{
 	
 	@XStreamAlias("FLIGHTAREACODE")
 	@Column(length=10)
-	private String flightareacode="11040400";
+	private String flightareacode="ASCN";
 	
 	@XStreamAlias("KIND")
 	@Column(length=2)
