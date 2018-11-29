@@ -99,9 +99,25 @@ public class PayMessage extends BaseEntity implements Serializable{
 	@Column(length=4)
 	private String itemcode="0309";
 	
+	/**
+	 * 航行区域代码:国内为空；国际：ASCN	
+	 * 中国	13675544	
+	 * TAIPEI1	World-wide Insurance Agency Limited 
+	 * 查看：“航行区域&理赔代理地”数据字典                       
+	 */
 	@XStreamAlias("FLIGHTAREACODE")
 	@Column(length=10)
 	private String flightareacode="ASCN";
+	
+	/**
+	 * 理赔代理地代码：国内为空；国际：TAIPEI1
+	 * 中国	13675544	
+	 * TAIPEI1	World-wide Insurance Agency Limited 
+	 * 查看：“航行区域&理赔代理地”数据字典	
+	 */
+	@XStreamAlias("CLAIMAGENT")
+	@Column(length=200)
+	private String claimagent="TAIPEI1";
 	
 	@XStreamAlias("KIND")
 	@Column(length=2)
@@ -127,10 +143,6 @@ public class PayMessage extends BaseEntity implements Serializable{
 	@XStreamAlias("ENDPORT")
 	@Column(length=60)
 	private String endport;
-	
-	@XStreamAlias("CLAIMAGENT")
-	@Column(length=200)
-	private String claimagent;
 	
 	@XStreamAlias("MAINITEMCODE")
 	@Column(length=12)

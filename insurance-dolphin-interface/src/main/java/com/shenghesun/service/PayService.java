@@ -51,12 +51,16 @@ public class PayService {
 		payMessage.setEffectdate(payMessage.getSaildate());
 		payMessage.setInsurantname(payMessage.getApplyname());
 		
-		if(payMessage.getClassestype().equals("1")) {
+		if(payMessage.getClassestype().equals("1")) {//国内
 			payMessage.setClasstype("11040400");
 			payMessage.setPremium(10);
 			payMessage.setInvamount(1000);
 			payMessage.setAmount(1000);
-		}else {
+			//国内清空“航行区域代码”
+			payMessage.setFlightareacode(null);
+			//国内清空“理赔代理地代码”
+			payMessage.setClaimagent(null);
+		}else {//国际
 			payMessage.setClasstype("11040400");
 			payMessage.setPremium(20);
 			payMessage.setInvamount(2000);
