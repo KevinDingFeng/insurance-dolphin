@@ -59,6 +59,9 @@ public class AsyncService {
     			pmTemp.setCreation(null);
     			pmTemp.setLastModified(null);
     			pmTemp.setVersion(null);
+    			//投保人名称,写死,自动核保
+    			pmTemp.setApplyname("海豚保险经纪（深圳）有限公司");
+    			pmTemp.setInsurantname("海豚保险经纪（深圳）有限公司");
     			List<Mark> markList = pmTemp.getMark();
     			if(!CollectionUtils.isEmpty(markList)) {
     				boolean flag = true;
