@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -43,7 +44,7 @@ public class OrderController {
 	   * @return
 	 * @throws Exception 
 	 */
-	@RequestMapping("/order")
+	@RequestMapping(value="/order" ,method = {RequestMethod.POST})
 	@ResponseBody
 	public Object getPrePayId(HttpServletRequest request,PayMessage payMessage) throws Exception {
 		//完善投保对象信息
