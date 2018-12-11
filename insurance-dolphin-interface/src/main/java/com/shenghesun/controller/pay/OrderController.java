@@ -51,7 +51,6 @@ public class OrderController {
 		String orderNo = System.currentTimeMillis() + RandomUtil.randomString(2);
 		payMessage.setOrderNo(orderNo);
 		payMessage = payService.completePayMessage(payMessage);
-		
 		BaseResponse response = new BaseResponse();
 		Map<String,String> map = new HashMap<>();
         map.put("openid",payMessage.getOpenid());//用户标识openId
@@ -99,7 +98,6 @@ public class OrderController {
         response.setData(json);
         
         payService.save(payMessage);
-		
         return response;
 	}
 	

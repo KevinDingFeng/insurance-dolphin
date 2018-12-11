@@ -28,20 +28,14 @@ public class PayService {
 		return payDao.findByOrderNo(orderNo);
 	}
 	public PayMessage completePayMessage(PayMessage payMessage) {
-		String mark = payMessage.getMarkString();
-		JsonParser jp = new JsonParser();  
-		JsonArray jo = jp.parse(mark).getAsJsonArray();
+		String mark[] = payMessage.getMarkString();
 		List<Mark> markList = new ArrayList<>();
-		
-		for(int i = 0;i<jo.size();i++) {
-			String result = jp.parse(jo.get(i).toString()).getAsJsonObject().get("mark").getAsString();
-			//System.out.println(result);
-			if(StringUtils.isNotEmpty(result)) {
+		for(int i = 0;i<mark.length;i++) {
+			if(StringUtils.isNotEmpty(mark[i])) {
 				Mark m = new Mark();
-				m.setMark(result);
+				m.setMark(mark[i]);
 				m.setPayMessage(payMessage);
 				markList.add(m);
-				//System.out.println(m);
 			}
 		}
 		//设置保单总金额
